@@ -108,7 +108,7 @@ BaselineOfPharoJS >> packages: spec [
 			  package: 'PharoJs-Base-Serialization-Deprecated' with: [ spec requires: #('PharoJs-Base-App' 'PharoJs-Base-Transpiler' 'PharoJs-TestFramework') ].
 							
 		"Bridge"	  
-		spec package: 'PharoJs-Base-Bridge' with: [ spec requires: #('PharoJs-Base-JS-CoreLibraries' 'PharoJs-Base-Exporter' 'PharoJs-Base-App' 'Zinc-WebSocket-Core' 'PharoJs-Base-Serialization')];
+		spec package: 'PharoJs-Base-Bridge' with: [ spec requires: #('PharoJs-Base-JS-CoreLibraries' 'PharoJs-Base-Exporter' 'PharoJs-Base-App' 'PharoJs-Base-Serialization')];
 			  package: 'PharoJs-Base-Bridge-Tests' with: [ spec requires: #('PharoJs-TestFramework' 'PharoJs-Base-Bridge') ].
 		
 		"App"
@@ -147,8 +147,5 @@ BaselineOfPharoJS >> prerequisites: spec [
 		baseline: 'Equals' with: [ spec repository: 'github://bouraqadi/PharoMisc' ];
 		baseline: 'LightweightObserver' with: [ spec repository: 'github://bouraqadi/PharoMisc' ];
 		baseline: 'Seaside3' with: [ spec repository: 'github://SeasideSt/Seaside:master/repository' ].	
-			
-	"Prerequisite Packages"	
-	spec
-		package: 'Zinc-WebSocket-Core' with: [ spec repository: 'github://svenvc/zinc' ]			 
+
 ]
