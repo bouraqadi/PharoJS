@@ -6,7 +6,8 @@ Class {
 		'newClasses',
 		'selectorsToConvert',
 		'previousSelectorsDict',
-		'methodsToConvertDict'
+		'methodsToConvertDict',
+		'newSelectors'
 	],
 	#category : #'PharoJs-Base-Exporter-Kernel'
 }
@@ -69,11 +70,23 @@ PjAutoImportTranspiler >> addNewClassWithSuperclasses: aClass [
 ]
 
 { #category : #'transpiling methods' }
+PjAutoImportTranspiler >> addNewSelector: aSymbol [
+
+	(selectorsToConvert includes: aSymbol) ifTrue: [ ^ self ].
+	newSelectors add: aSymbol.
+	selectorsToConvert add: aSymbol
+]
+
+{ #category : #'transpiling methods' }
 PjAutoImportTranspiler >> addTo: methodsToConvert methodToConvert: aCompiledMethod [
-	"self shouldSkipMethodNode: aCompiledMethod"
 
 	self flag: #'add support for skip pragma'.
-	methodsToConvert add: aCompiledMethod
+	"(self shouldSkipMethodNode: aCompiledMethod) ifTrue: [^self]"
+	methodsToConvert add: aCompiledMethod.
+	aCompiledMethod literalsDo: [ :each | 
+self flag: #'add support for class discovery'.		"		each isBehavior ifTrue: [ self addNewClass: each ].
+"
+		each isSymbol ifTrue: [ self addNewSelector: each ] ]
 ]
 
 { #category : #'transpiling methods' }
@@ -94,6 +107,7 @@ PjAutoImportTranspiler >> classesToConvert [
 { #category : #transpiling }
 PjAutoImportTranspiler >> convertAllClasses: classes [
 
+	selectorsToConvert addAll: #( initialize start ).
 	classes do: [ :each | self addNewClassWithSuperclasses: each ].
 	[ newClasses isEmpty ] whileFalse: [ self findNewClasses ].
 	super convertAllClasses: classesToConvert
@@ -111,7 +125,11 @@ PjAutoImportTranspiler >> findNewClasses [
 	| startClasses |
 	startClasses := newClasses.
 	self resetNewClasses.
-	startClasses do: [  :each | self addClassToConvert: each ]
+	self resetNewSelectors.
+	startClasses do: [ :each | self addClassToConvert: each ].
+	newSelectors ifNotEmpty: [ 
+		newClasses addAll: classesToConvert.
+		self resetNewSelectors  ]
 ]
 
 { #category : #initialization }
@@ -120,9 +138,9 @@ PjAutoImportTranspiler >> initialize [
 	super initialize.
 	classesToConvert := IdentitySet new.
 	self resetNewClasses.
-	selectorsToConvert := Set withAll: #( initialize start ).
+	selectorsToConvert := Set new.
 	previousSelectorsDict := IdentityDictionary new.
-	methodsToConvertDict := IdentityDictionary new.
+	methodsToConvertDict := IdentityDictionary new
 ]
 
 { #category : #accessing }
@@ -134,4 +152,10 @@ PjAutoImportTranspiler >> methodsToConvertDict [
 PjAutoImportTranspiler >> resetNewClasses [
 
 	newClasses := IdentitySet new
+]
+
+{ #category : #initialization }
+PjAutoImportTranspiler >> resetNewSelectors [
+
+	newSelectors := Set new
 ]
