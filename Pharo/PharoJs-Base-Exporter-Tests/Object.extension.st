@@ -11,6 +11,13 @@ Object class >> hiddenForPharoJS [
 ]
 
 { #category : #'*PharoJs-Base-Exporter-Tests' }
+Object class >> skipUponTranspile [
+
+	<pharoJsSkip>
+	self unWantedForPharoJS2 
+]
+
+{ #category : #'*PharoJs-Base-Exporter-Tests' }
 Object class >> superSendForPharoJS [
 	^self hiddenCalledBySuperForPharoJS 
 ]
@@ -18,6 +25,12 @@ Object class >> superSendForPharoJS [
 { #category : #'*PharoJs-Base-Exporter-Tests' }
 Object class >> unWantedForPharoJS2 [
 	^self
+]
+
+{ #category : #'*PharoJs-Base-Exporter-Tests' }
+Object class >> unWantedForPharoJSNotReferenced2 [
+
+	^ self
 ]
 
 { #category : #'*PharoJs-Base-Exporter-Tests' }

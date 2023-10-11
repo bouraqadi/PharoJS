@@ -5,6 +5,13 @@ Class {
 }
 
 { #category : #'start/stop' }
+PjMinimalAppForTest class >> anotherSkip [
+
+	<pharoJsSkip>
+	self unWantedForPharoJS1
+]
+
+{ #category : #'start/stop' }
 PjMinimalAppForTest class >> hiddenCalledBySuperForPharoJS [
 	^self
 ]
@@ -29,4 +36,10 @@ PjMinimalAppForTest class >> superSendForPharoJS [
 { #category : #'start/stop' }
 PjMinimalAppForTest class >> unWantedForPharoJS1 [
 	^self unWantedForPharoJS2
+]
+
+{ #category : #'start/stop' }
+PjMinimalAppForTest class >> unWantedForPharoJSNotReferenced1 [
+
+	^ self
 ]
