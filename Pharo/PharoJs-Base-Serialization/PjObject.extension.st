@@ -23,8 +23,3 @@ PjObject class >> jsTranspilationImportMethodsNonstandard [
 		->
 			#(asPhxJsonString #writePhxJsonOn: writePhxJsonRepresentationOn: #writePhxJsonObjectOn:))}
 ]
-
-{ #category : #'*PharoJs-Base-Serialization' }
-PjObject class >> phxJsonClassName [
-	^ self name
-]

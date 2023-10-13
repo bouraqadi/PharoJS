@@ -1,0 +1,169 @@
+Class {
+	#name : #PjDependencyAnalyzer,
+	#superclass : #Object,
+	#instVars : [
+		'classesToConvert',
+		'newClasses',
+		'selectorsToConvert',
+		'previousSelectorsDict',
+		'methodsToConvertDict',
+		'newSelectors',
+		'currentClass'
+	],
+	#category : #'PharoJs-Base-Exporter-Kernel'
+}
+
+{ #category : #'analyzing classes' }
+PjDependencyAnalyzer >> addClassToConvert: aClass [
+
+	currentClass := aClass.
+	classesToConvert add: aClass.
+	self addInstanceAndClassMethodsFrom: aClass
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addInstanceAndClassMethodsFrom: aClass [
+
+	{
+		aClass.
+		aClass class } do: [ :each |
+		self addMethodsToConvertFrom: each  ]
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addMethodsToConvertFrom: aClass [
+
+	| previousSelectors missingSelectors |
+	previousSelectors := previousSelectorsDict
+		                     at: aClass
+		                     ifAbsentPut: [ Set new ].
+	missingSelectors := selectorsToConvert copyWithoutAll:
+		                    previousSelectors.
+	previousSelectors addAll: missingSelectors.
+	self addMethodsToConvertFrom: aClass selectors: missingSelectors 
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addMethodsToConvertFrom: aClass selectors: missingSelectors [
+
+	| methodSelectors methodsToConvert |
+	methodsToConvert := methodsToConvertDict
+		                    at: aClass
+		                    ifAbsentPut: [ IdentitySet new ].
+	aClass withMethodSourcesDo: [ :cl |
+		methodSelectors := missingSelectors intersection: cl selectors.
+		missingSelectors removeAll: methodSelectors.
+		self
+			addTo: methodsToConvert
+			methodsToConvertFrom: cl
+			selectors: methodSelectors ]
+]
+
+{ #category : #'analyzing classes' }
+PjDependencyAnalyzer >> addNewClass: aClass [
+
+	newClasses add: aClass classToUseForJsConversion.
+
+]
+
+{ #category : #'analyzing classes' }
+PjDependencyAnalyzer >> addNewClassWithSuperclasses: aClass [
+
+	aClass withAllSuperclassesDo: [ :each | self addNewClass: each ]
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addNewSelector: aSymbol [
+
+	(selectorsToConvert includes: aSymbol) ifTrue: [ ^ self ].
+	newSelectors add: aSymbol.
+	selectorsToConvert add: aSymbol
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addTo: methodsToConvert methodToConvert: aCompiledMethod [
+
+	self flag: #'add support for skip pragma'.
+	(self shouldSkipMethod: aCompiledMethod) ifTrue: [^self].
+	methodsToConvert add: aCompiledMethod.
+	aCompiledMethod literalsDo: [ :each |
+		self flag: #'add support for class discovery'. "		each isBehavior ifTrue: [ self addNewClass: each ].
+"
+		each isSymbol ifTrue: [ self addNewSelector: each ] ]
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass selectors: selectors [
+
+	| methods |
+	methods := selectors collect: [ :each |
+		           aClass compiledMethodAt: each ].
+	methods do: [ : each | self addTo: methodsToConvert methodToConvert: each ]
+]
+
+{ #category : #analyzing }
+PjDependencyAnalyzer >> analyzeAllClasses: classes [
+
+	selectorsToConvert addAll: #( initialize start ).
+	classes do: [ :each | self addNewClassWithSuperclasses: each ].
+	[ newClasses isEmpty ] whileFalse: [ self findNewClasses ].
+
+]
+
+{ #category : #analyzing }
+PjDependencyAnalyzer >> analyzeClass: aClass [
+
+	self analyzeAllClasses: { aClass }
+]
+
+{ #category : #accessing }
+PjDependencyAnalyzer >> classesToConvert [
+
+	^ classesToConvert
+]
+
+{ #category : #'analyzing classes' }
+PjDependencyAnalyzer >> findNewClasses [
+
+	| startClasses |
+	startClasses := newClasses.
+	self resetNewClasses.
+	self resetNewSelectors.
+	startClasses do: [ :each | self addClassToConvert: each ].
+	newSelectors ifNotEmpty: [ 
+		newClasses addAll: classesToConvert.
+		self resetNewSelectors  ]
+]
+
+{ #category : #initialization }
+PjDependencyAnalyzer >> initialize [
+
+	super initialize.
+	classesToConvert := IdentitySet new.
+	self resetNewClasses.
+	selectorsToConvert := Set new.
+	previousSelectorsDict := IdentityDictionary new.
+	methodsToConvertDict := IdentityDictionary new
+]
+
+{ #category : #accessing }
+PjDependencyAnalyzer >> methodsToConvertDict [
+	^methodsToConvertDict 
+]
+
+{ #category : #initialization }
+PjDependencyAnalyzer >> resetNewClasses [
+
+	newClasses := IdentitySet new
+]
+
+{ #category : #initialization }
+PjDependencyAnalyzer >> resetNewSelectors [
+
+	newSelectors := Set new
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> shouldSkipMethod: aCompiledMethod [
+	^currentClass methodsToSkip includes: aCompiledMethod
+]

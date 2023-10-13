@@ -35,29 +35,6 @@ PjObject class >> allEnumeratableKeysDo_jsGenerator: transpiler [
 	return this;'
 ]
 
-{ #category : #'pharoJs support' }
-PjObject class >> jsTranspilationImportMethods [
-
-	<pharoJsSkip>
-	^ {
-		  (ProtoObject
-		   -> #( isNil ifNil: ifNotNil: #ifNil:ifNotNil: #ifNotNil:ifNil: )).
-		  (Object
-		   ->
-			   #( -> as: asOrderedCollection isKindOf: error: respondsTo:
-			      isMemberOf: className isNotNil notNil isString isClass
-			      isBlock isNumber isBehavior isCollection isArray isFloat
-			      isInteger isCharacter isSymbol isStream isPjProxyOrNil
-			      printOn: shouldBePrintedAsLiteral shouldBePrintedAsLiteral:
-			      isLiteral isSelfEvaluating isSelfEvaluating:
-			      isPoint )).
-		  (Collection
-		   -> #( addAll: #ifEmpty:ifNotEmpty: #ifNotEmpty:ifEmpty:
-			      ifEmpty: ifNotEmpty: )).
-		  (Dictionary -> #( do: )).
-		  (Dictionary class -> #( newFrom: newFromPairs: )) }
-]
-
 { #category : #'dictionary emulation' }
 PjObject class >> keysAndValuesDo_jsGenerator: transpiler [
 	<pharoJsSkip>
@@ -70,6 +47,24 @@ PjObject class >> keysDo_jsGenerator: transpiler [
 	<pharoJsSkip>
 	^'for (var i in this){if(this.hasOwnProperty(i))aBlock.', transpiler pharoJsSelectorPrefix, 'value_(i)};
 	return this;'
+]
+
+{ #category : #'pharoJs support' }
+PjObject class >> methodSources [
+
+	<pharoJsSkip>
+	^ {
+		  Object.
+		  ProtoObject.
+		  Dictionary.
+		  Collection }
+]
+
+{ #category : #'pharoJs support' }
+PjObject class >> methodsToSkip [
+
+	<pharoJsSkip>
+	^ { (Object class >> #initialize) }
 ]
 
 { #category : #comparing }
@@ -210,10 +205,6 @@ PjObject >> includesKey: key [
 	<javascript: 'return this.hasOwnProperty(key)'>
 ]
 
-{ #category : #'initialize-release' }
-PjObject >> initialize [
-]
-
 { #category : #introspection }
 PjObject >> instVarNamed: aString [
 	^ self js_at: aString
@@ -325,10 +316,6 @@ PjObject >> proxyResponse [
 	p remove: (self instVarNamed: '$PjProxyRemove').
 	p globalName: assoc value.
 	^ p
-]
-
-{ #category : #'initialize-release' }
-PjObject >> release [
 ]
 
 { #category : #'dictionary emulation' }
