@@ -26,12 +26,6 @@ Class >> inheritedSharedPools [
 	^ self allSharedPools
 ]
 
-{ #category : #'*PharoJs-Base-Exporter' }
-Class >> javascriptIsExportableClass [
-
-	^ true
-]
-
 { #category : #'*PharoJs-Base-Exporter-App' }
 Class >> sharedPoolOfVarNamedRecursive: aString [
 	"Returns the SharedPool or nil from which the pool variable named aString is coming from."

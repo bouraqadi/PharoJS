@@ -13,18 +13,18 @@ Class {
 PjAutoImportTranspilerV1 >> convertAllClasses: classes [
 
 	| newClasses |
-	self addClassesToConvert:
-		(classes select: #javascriptIsExportableClass).
 	[ isNewSelectorFound ] whileTrue: [
-	 classesToConvert addAll: convertedClasses.
-	selectorsToConvert addAll: convertedSelectors.
-	[ classesToConvert isEmpty and: [ selectorsToConvert isEmpty ] ]
-		whileFalse: [
-			| theseClasses |
-			theseClasses := classesToConvert.
-			classesToConvert := Set new.
-			theseClasses do: [ :aClass |
-				self convertMethodAsts: aClass instanceSide newClasses: newClasses ] ]].
+		classesToConvert addAll: convertedClasses.
+		selectorsToConvert addAll: convertedSelectors.
+		[ classesToConvert isEmpty and: [ selectorsToConvert isEmpty ] ]
+			whileFalse: [
+				| theseClasses |
+				theseClasses := classesToConvert.
+				classesToConvert := Set new.
+				theseClasses do: [ :aClass |
+					self
+						convertMethodAsts: aClass instanceSide
+						newClasses: newClasses ] ] ].
 	super convertAllClasses: newClasses
 ]
 

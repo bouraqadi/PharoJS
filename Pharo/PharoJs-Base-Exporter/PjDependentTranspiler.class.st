@@ -31,9 +31,6 @@ PjDependentTranspiler >> addAlreadyDefinedClasses: classes [
 PjDependentTranspiler >> addClassToConvert: aClass [
 
 	| addClass |
-	aClass javascriptIsExportableClass ifFalse: [ 
-		^ converter transpilationError:
-			  'non-exportable class ' , aClass name , ' referenced' ].
 	addClass := aClass classToUseForJsConversion.
 	(classesToConvert includes: addClass) ifFalse: [ " redundant test allows setting breakpoint for adding classes "
 		addClass == PjTranspiler ifTrue: [ self halt ].
@@ -63,16 +60,13 @@ PjDependentTranspiler >> beforeCodeOutputHook: aBlock [
 PjDependentTranspiler >> convertAllClasses: classes [
 
 	| newClasses |
-	self
-		addClassesToConvert: (classes select: #javascriptIsExportableClass).
 	newClasses := OrderedCollection new.
-	[ classesToConvert isEmpty ]
-		whileFalse: [ | theseClasses |
-			theseClasses := classesToConvert.
-			classesToConvert := Set new.
-			theseClasses
-				do:
-					[ :aClass | self convertMethodAsts: aClass instanceSide newClasses: newClasses ] ].
+	[ classesToConvert isEmpty ] whileFalse: [
+		| theseClasses |
+		theseClasses := classesToConvert.
+		classesToConvert := Set new.
+		theseClasses do: [ :aClass |
+			self convertMethodAsts: aClass instanceSide newClasses: newClasses ] ].
 	super convertAllClasses: newClasses
 ]
 

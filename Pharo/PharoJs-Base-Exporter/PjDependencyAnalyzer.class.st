@@ -22,6 +22,14 @@ PjDependencyAnalyzer >> addClassToConvert: aClass [
 ]
 
 { #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addDependencyFrom: aLiteral [
+
+	aLiteral isSymbol ifTrue: [ ^ self addNewSelector: aLiteral ].
+	( aLiteral value isBehavior )
+		ifTrue: [ ^ self addNewClassWithSuperclasses: aLiteral value ]
+]
+
+{ #category : #'analyzing methods' }
 PjDependencyAnalyzer >> addInstanceAndClassMethodsFrom: aClass [
 
 	{
@@ -83,13 +91,10 @@ PjDependencyAnalyzer >> addNewSelector: aSymbol [
 { #category : #'analyzing methods' }
 PjDependencyAnalyzer >> addTo: methodsToConvert methodToConvert: aCompiledMethod [
 
-	self flag: #'add support for skip pragma'.
-	(self shouldSkipMethod: aCompiledMethod) ifTrue: [^self].
+	(self shouldSkipMethod: aCompiledMethod) ifTrue: [ ^ self ].
 	methodsToConvert add: aCompiledMethod.
-	aCompiledMethod literalsDo: [ :each |
-		self flag: #'add support for class discovery'. "		each isBehavior ifTrue: [ self addNewClass: each ].
-"
-		each isSymbol ifTrue: [ self addNewSelector: each ] ]
+	aCompiledMethod literalsDo: [ :each | self addDependencyFrom: each]
+
 ]
 
 { #category : #'analyzing methods' }
@@ -165,5 +170,7 @@ PjDependencyAnalyzer >> resetNewSelectors [
 
 { #category : #'analyzing methods' }
 PjDependencyAnalyzer >> shouldSkipMethod: aCompiledMethod [
-	^currentClass methodsToSkip includes: aCompiledMethod
+
+	^(aCompiledMethod hasPragmaNamed: (PjTranspiler skipMethodPragmaKeyword)) or:  
+	[currentClass methodsToSkip includes: aCompiledMethod]
 ]
