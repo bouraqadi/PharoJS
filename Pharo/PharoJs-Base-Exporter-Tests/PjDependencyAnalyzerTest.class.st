@@ -29,9 +29,9 @@ PjDependencyAnalyzerTest >> setUp [
 { #category : #accessing }
 PjDependencyAnalyzerTest >> testFindClassesToConvert [
 
-	self analyzeClass: PjMinimalAppForTest.
+	self analyzeClass: PjEntryPointForDependencyTest.
 	self assertCollection: analyzer classesToConvert hasSameElements: {
-			PjMinimalAppForTest.
+			PjEntryPointForDependencyTest.
 			PjObject }
 ]
 
@@ -39,11 +39,11 @@ PjDependencyAnalyzerTest >> testFindClassesToConvert [
 PjDependencyAnalyzerTest >> testFindMethodsToConvert [
 
 	| minimalAppClassMethods objectMethods objectClassMethods |
-	self analyzeClass: PjMinimalAppForTest.
+	self analyzeClass: PjEntryPointForDependencyTest.
 	minimalAppClassMethods := #( start hiddenForPharoJS superSendForPharoJS
 	                             hiddenCalledBySuperForPharoJS )
 		                          collect: [ :each |
-		                          PjMinimalAppForTest class >> each ].
+		                          PjEntryPointForDependencyTest class >> each ].
 	objectMethods := #( initialize ) collect: [ :each |
 		                 ProtoObject >> #initialize ].
 	objectClassMethods := #( zorkForPharoJS hiddenForPharoJS

@@ -1,45 +1,45 @@
 Class {
-	#name : #PjMinimalAppForTest,
+	#name : #PjEntryPointForDependencyTest,
 	#superclass : #Object,
 	#category : #'PharoJs-Base-Exporter-Tests-AutoImport'
 }
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> anotherSkip [
+PjEntryPointForDependencyTest class >> anotherSkip [
 
 	<pharoJsSkip>
 	self unWantedForPharoJS1
 ]
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> hiddenCalledBySuperForPharoJS [
+PjEntryPointForDependencyTest class >> hiddenCalledBySuperForPharoJS [
 	^self
 ]
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> hiddenForPharoJS [
+PjEntryPointForDependencyTest class >> hiddenForPharoJS [
 	^self
 ]
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> start [
+PjEntryPointForDependencyTest class >> start [
 	self zorkForPharoJS.
 	self hiddenForPharoJS.
 	self superSendForPharoJS.
 ]
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> superSendForPharoJS [
+PjEntryPointForDependencyTest class >> superSendForPharoJS [
 	super superSendForPharoJS
 ]
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> unWantedForPharoJS1 [
+PjEntryPointForDependencyTest class >> unWantedForPharoJS1 [
 	^self unWantedForPharoJS2
 ]
 
 { #category : #'start/stop' }
-PjMinimalAppForTest class >> unWantedForPharoJSNotReferenced1 [
+PjEntryPointForDependencyTest class >> unWantedForPharoJSNotReferenced1 [
 
 	^ self
 ]
