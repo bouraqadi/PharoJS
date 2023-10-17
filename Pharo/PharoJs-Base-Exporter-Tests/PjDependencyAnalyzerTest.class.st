@@ -5,7 +5,7 @@ Class {
 		'analyzer',
 		'factory'
 	],
-	#category : #'PharoJs-Base-Exporter-Tests-AutoImport'
+	#category : #'PharoJs-Base-Exporter-Tests-Tests'
 }
 
 { #category : #running }

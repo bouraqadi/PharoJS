@@ -1,7 +1,7 @@
 Class {
 	#name : #PjEntryPointForDependencyTest,
 	#superclass : #Object,
-	#category : #'PharoJs-Base-Exporter-Tests-AutoImport'
+	#category : #'PharoJs-Base-Exporter-Tests-Tests'
 }
 
 { #category : #'start/stop' }
