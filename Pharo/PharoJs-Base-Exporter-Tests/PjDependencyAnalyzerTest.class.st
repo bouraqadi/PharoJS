@@ -26,7 +26,7 @@ PjDependencyAnalyzerTest >> methodsToConvert [
 { #category : #accessing }
 PjDependencyAnalyzerTest >> methodsToConvertFor: aClass [
 
-	^ analyzer methodsToConvertDict at: aClass
+	^ analyzer methodsToConvertFor: aClass
 ]
 
 { #category : #running }

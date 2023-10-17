@@ -1,32 +1,39 @@
 Class {
-	#name : #PjDependentTranspilerTest,
+	#name : #PjDependencyTranspilerTest,
 	#superclass : #PjPackageTranspilationTest,
 	#category : #'PharoJs-Base-Exporter-Tests-Tests'
 }
 
 { #category : #testing }
-PjDependentTranspilerTest >> testBootstrapClasses [
+PjDependencyTranspilerTest >> testBootstrapClasses [
 
-	transpiler alreadyConvertedClasses: { PjCore }.
-	self generateJsCodeForClasses: PjExporter bootstrapClasses.
+	self generateJsCodeForClasses: PjExporter bootstrapClasses, {PjCore}.
 	self assertClassExtension: PjObject installedBefore: PjString.
 	self assertClassExtension: PjObject installedBefore: PjError
 ]
 
 { #category : #testing }
-PjDependentTranspilerTest >> testClassOrdering [
-	transpiler alreadyConvertedClasses: { PjCore. Object. }.
-	self generateJsCodeForClasses: {
-		PjAlternateClassForTranspilationTest.
-	}.
-	self assertClass: PjSuperClassForTranspilationTest installedBefore: PjAlternateClassForTranspilationTest.
-	self assertClass: PjSharedPoolForTest installedBefore: PjSuperClassForTranspilationTest.
-	self assertClass: PjClassEForPackageTranspilationTest installedBefore: PjAlternateClassForTranspilationTest.
-	self assert: PjSharedPoolForTest initializedBefore: PjAlternateClassForTranspilationTest.
+PjDependencyTranspilerTest >> testClassOrdering [
+
+	self generateJsCodeForClasses:
+		{ PjAlternateClassForTranspilationTest. PjCore.
+			Object }.
+	self
+		assertClass: PjSuperClassForTranspilationTest
+		installedBefore: PjAlternateClassForTranspilationTest.
+	self
+		assertClass: PjSharedPoolForTest
+		installedBefore: PjSuperClassForTranspilationTest.
+	self
+		assertClass: PjClassEForPackageTranspilationTest
+		installedBefore: PjAlternateClassForTranspilationTest.
+	self
+		assert: PjSharedPoolForTest
+		initializedBefore: PjAlternateClassForTranspilationTest
 ]
 
 { #category : #testing }
-PjDependentTranspilerTest >> testIncludeMethods [
+PjDependencyTranspilerTest >> testIncludeMethods [
 	" test that methods from a variety of dependent classes get loaded "
 	self generateJsCodeForClasses: { PjClassForTranspilationTest }.
 	self assert: (self instanceMethod: #selector) equals: '(){return this.selector}'.
@@ -37,6 +44,7 @@ PjDependentTranspilerTest >> testIncludeMethods [
 ]
 
 { #category : #accessing }
-PjDependentTranspilerTest >> transpilerClass [
-	^ PjDependentTranspiler
+PjDependencyTranspilerTest >> transpilerClass [
+
+	^ PjDependencyTranspiler
 ]

@@ -156,6 +156,12 @@ PjDependencyAnalyzer >> methodsToConvertDict [
 	^methodsToConvertDict 
 ]
 
+{ #category : #accessing }
+PjDependencyAnalyzer >> methodsToConvertFor: aClass [
+
+	^ self methodsToConvertDict at: aClass
+]
+
 { #category : #initialization }
 PjDependencyAnalyzer >> resetNewClasses [
 

@@ -3,7 +3,7 @@ I am a transpiler that can be controlled to support the timing application/
 "
 Class {
 	#name : #PjTimingTestTranspiler,
-	#superclass : #PjDependentTranspiler,
+	#superclass : #PjDependentTranspilerOLD,
 	#instVars : [
 		'delayDNU'
 	],

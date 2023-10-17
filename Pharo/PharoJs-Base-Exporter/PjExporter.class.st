@@ -36,7 +36,7 @@ PjExporter class >> newWithAppClass: aClass [
 
 { #category : #accessing }
 PjExporter class >> transpilerClass [
-	^ PjDependentTranspiler
+	^ PjDependentTranspilerOLD
 ]
 
 { #category : #'writing low-level' }

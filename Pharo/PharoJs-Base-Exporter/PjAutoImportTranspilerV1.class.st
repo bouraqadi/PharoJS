@@ -1,6 +1,6 @@
 Class {
 	#name : #PjAutoImportTranspilerV1,
-	#superclass : #PjDependentTranspiler,
+	#superclass : #PjDependentTranspilerOLD,
 	#instVars : [
 		'selectorsToConvert',
 		'isNewSelectorFound',
