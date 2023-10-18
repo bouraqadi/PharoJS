@@ -196,6 +196,20 @@ PjDependencyAnalyzerTest >> testMethodSourcesAreNotInherited [
 ]
 
 { #category : #running }
+PjDependencyAnalyzerTest >> testSharedPools [
+
+	| expectedClasses |
+	self analyzeClass: PjSuperClassForTranspilationTest.
+	expectedClasses := {
+	PjObject.
+		                   PjSuperClassForTranspilationTest.
+		                   PjSharedPoolForTest }.
+	self
+		assertCollection: analyzer classesToConvert
+		hasSameElements: expectedClasses
+]
+
+{ #category : #running }
 PjDependencyAnalyzerTest >> testSkipMethodsWithSkipPragma [
 
 	| class |

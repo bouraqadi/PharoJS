@@ -70,8 +70,10 @@ PjDependencyAnalyzer >> addMethodsToConvertFrom: aClass selectors: missingSelect
 { #category : #'analyzing classes' }
 PjDependencyAnalyzer >> addNewClass: aClass [
 
-	newClasses add: aClass classToUseForJsConversion.
-
+	| actualClass |
+	actualClass := aClass classToUseForJsConversion.
+	newClasses add: actualClass.
+	actualClass sharedPools do: [ : pool | self addNewClassWithSuperclasses: pool]
 ]
 
 { #category : #'analyzing classes' }

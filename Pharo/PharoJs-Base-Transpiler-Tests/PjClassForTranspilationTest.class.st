@@ -216,6 +216,12 @@ PjClassForTranspilationTest >> composedCalls [
 	^ (self m1 m:4) m2
 ]
 
+{ #category : #initialization }
+PjClassForTranspilationTest >> initialize [
+	"Trick to en sure all selectors are transpiled"
+	^#(#optimizeAtTest #cascade: #whileAtEnd #cascadeSuper #toDoWithObjectAsParameter #aliasSpecialNameCaller #blockWithUnnamedParameterNonTail #cascadeNested #@ #composedCalls #m1 #native #whileNotAtEnd #add:and: #alias #twoPragmaWithAliases #cascadeSelf #methodToSkip #blockWithUnnamedParameter #alias2 #instanceMethodWithJsGenerator #m2 #aliasSpecialName #alias1Caller #aliasCaller #blockWithNamedParameter #alias2Caller #blocksReferencingSelf #methodWithPoolVars #alias1Caller: #m: #alias1: #nestedBlocksReferencingSelf)
+]
+
 { #category : #any }
 PjClassForTranspilationTest >> instanceMethodWithJsGenerator [
 		<jsGenerator: #instanceMethod_jsGenerator:>

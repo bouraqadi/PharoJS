@@ -25,7 +25,7 @@ PjPackageTranspilationTest >> assert: firstClass inCodeWith: codeString before: 
 PjPackageTranspilationTest >> assert: firstClass inCodeWithPrefix: codeString before: lastClass [
 	| firstIndex lastIndex |
 	firstIndex := self jsCode indexOfSubCollection: codeString, firstClass nameToUseForJsConversion.
-	self deny: firstIndex = 0.
+	self deny: firstIndex equals: 0.
 	lastIndex := self jsCode indexOfSubCollection: codeString, lastClass nameToUseForJsConversion.
 	self assert: firstIndex < lastIndex.
 ]
