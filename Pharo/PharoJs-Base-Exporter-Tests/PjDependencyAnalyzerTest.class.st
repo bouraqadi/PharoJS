@@ -196,14 +196,46 @@ PjDependencyAnalyzerTest >> testMethodSourcesAreNotInherited [
 ]
 
 { #category : #running }
-PjDependencyAnalyzerTest >> testSharedPools [
+PjDependencyAnalyzerTest >> testSharedPoolsDirectlyReferenced [
 
 	| expectedClasses |
 	self analyzeClass: PjSuperClassForTranspilationTest.
-	expectedClasses := {
-	PjObject.
+	expectedClasses := {SharedPool.
+		                   PjObject.
 		                   PjSuperClassForTranspilationTest.
 		                   PjSharedPoolForTest }.
+	self
+		assertCollection: analyzer classesToConvert
+		hasSameElements: expectedClasses
+]
+
+{ #category : #running }
+PjDependencyAnalyzerTest >> testSharedPoolsForJsGlobalsIgnored [
+	| expectedClasses class |
+	class := factory newClass.
+	class sharedPools: { PjDomGlobals }.
+	self analyzeClass: class.
+	expectedClasses := {
+		                   PjObject.
+		                   class }.
+	self
+		assertCollection: analyzer classesToConvert
+		hasSameElements: expectedClasses
+]
+
+{ #category : #running }
+PjDependencyAnalyzerTest >> testSharedPoolsIndirectlyReferenced [
+
+	| expectedClasses class |
+	class := factory newClass.
+	class compile: 'initialize
+	' , PjSuperClassForTranspilationTest name.
+	self analyzeClass: class.
+	expectedClasses := {SharedPool.
+		                   PjObject.
+		                   PjSuperClassForTranspilationTest.
+		                   PjSharedPoolForTest.
+		                   class }.
 	self
 		assertCollection: analyzer classesToConvert
 		hasSameElements: expectedClasses

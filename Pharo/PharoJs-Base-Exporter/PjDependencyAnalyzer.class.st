@@ -73,12 +73,14 @@ PjDependencyAnalyzer >> addNewClass: aClass [
 	| actualClass |
 	actualClass := aClass classToUseForJsConversion.
 	newClasses add: actualClass.
-	actualClass sharedPools do: [ : pool | self addNewClassWithSuperclasses: pool]
+	actualClass sharedPools do: [ :pool |
+		self addNewClassWithSuperclasses: pool ]
 ]
 
 { #category : #'analyzing classes' }
 PjDependencyAnalyzer >> addNewClassWithSuperclasses: aClass [
 
+	aClass isPharoOnlyClass ifTrue: [ ^ self ].
 	aClass withAllSuperclassesDo: [ :each | self addNewClass: each ]
 ]
 

@@ -573,7 +573,7 @@ PjAstConverter >> visitClassOrPoolVariable: aRBVariableNode id: id [
 				 ].
 	(variableClass instanceSide sharedPoolOfVarNamedRecursive: id)
 		ifNotNil: [ :pool | 
-			pool isJavascriptGlobalsPool
+			pool isPharoOnlyClass
 				ifTrue: [ self discoveredGlobalsPool: pool.
 					^ PjGlobalNode identifier: id ].
 			self signal: 'pool' ifClosedBlockReferences: id.

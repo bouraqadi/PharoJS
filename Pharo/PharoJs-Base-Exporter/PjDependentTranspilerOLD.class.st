@@ -100,7 +100,7 @@ PjDependentTranspilerOLD >> convertMethodAsts: aClass newClasses: newClasses [
 		ifFalse: [ aClass superclass
 				ifNotNil: [ self addClassToConvert: aClass superclass ].
 			self
-				addClassesToConvert: (aClass instanceSide sharedPools reject: #isJavascriptGlobalsPool).
+				addClassesToConvert: (aClass instanceSide sharedPools reject: #isPharoOnlyClass).
 			convertedClasses add: aClass.
 			newClasses add: aClass ].
 	self
