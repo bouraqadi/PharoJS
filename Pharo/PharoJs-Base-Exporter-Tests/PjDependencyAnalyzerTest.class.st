@@ -284,7 +284,6 @@ PjDependencyAnalyzerTest >> testMethodSourceFromClassToSelectorsAssociation [
 			PjObject.
 			targetClass }.
 	expectedMethods := {
-		                   (ProtoObject >> #initialize).
 		                   (targetClass >> #initialize).
 		                   (fooBarSource >> #foo).
 		                   (fooBarSource >> #bar).
