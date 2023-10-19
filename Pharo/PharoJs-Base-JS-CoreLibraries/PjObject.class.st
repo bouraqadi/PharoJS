@@ -52,6 +52,7 @@ PjObject class >> keysDo_jsGenerator: transpiler [
 { #category : #'pharoJs support' }
 PjObject class >> methodSources [
 
+<pjMethodSources>
 	<pharoJsSkip>
 	^ {
 		  Object.

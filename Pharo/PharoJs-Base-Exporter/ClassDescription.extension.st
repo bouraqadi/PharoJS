@@ -1,24 +1,47 @@
 Extension { #name : #ClassDescription }
 
 { #category : #'*PharoJs-Base-Exporter' }
-ClassDescription >> hasMethodSources [
+ClassDescription >> allMethodSources [
 
 	<pharoJsSkip>
-	self classSide compiledMethodAt: #methodSources ifAbsent: [ ^false ].
-	^true
+	^ self allRawMethodSources collect: [ :each |
+		  self methodSourceFrom: each ]
 ]
 
 { #category : #'*PharoJs-Base-Exporter' }
-ClassDescription >> methodSources [
+ClassDescription >> allMethodSourcesProviders [
+
+	self subclassResponsibility
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
+ClassDescription >> allRawMethodSources [
 
 	<pharoJsSkip>
-	^ #(  )
+	^ self allMethodSourcesProviders
+		  inject: IdentitySet new
+		  into: [ :sources :provider |
+			  sources addAll:
+				  (provider valueWithReceiver: self instanceSide arguments: #(  )) ]
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
+ClassDescription >> hasMethodSources [
+
+	<pharoJsSkip>
+	^ self allMethodSourcesProviders notEmpty
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
+ClassDescription >> methodSourceFrom: anObject [
+
+	self subclassResponsibility
 ]
 
 { #category : #'*PharoJs-Base-Exporter' }
 ClassDescription >> withMethodSourcesDo: aBlock [
 
 	<pharoJsSkip>
-	self hasMethodSources ifFalse: [ ^ aBlock value: self].
-	^ { self } , self methodSources do: aBlock
+	self hasMethodSources ifFalse: [ ^ aBlock value: self ].
+	^ { self } , self allMethodSources do: aBlock
 ]

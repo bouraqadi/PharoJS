@@ -1,5 +1,12 @@
 Extension { #name : #Class }
 
+{ #category : #'*PharoJs-Base-Exporter' }
+Class >> allMethodSourcesProviders [
+
+	<pharoJsSkip>
+	^ self class allMethodSourcesProviders
+]
+
 { #category : #'*PharoJs-Base-Exporter-App' }
 Class >> allSharedPoolsRecursive [
 	"Answer a set of the pools the receiver shares, including those defined  in the superclasses of the receiver."
@@ -20,10 +27,29 @@ Class >> allSharedPoolsRecursiveInto: aCollection [
 	^ aCollection
 ]
 
+{ #category : #'*PharoJs-Base-Exporter' }
+Class >> asClassMethodsSource [
+
+	<pharoJsSkip>
+	^ self classSide
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
+Class >> asInstanceMethodsSource [
+
+	<pharoJsSkip>
+	^ self
+]
+
 { #category : #'*PharoJs-Base-Exporter-App' }
 Class >> inheritedSharedPools [
 
 	^ self allSharedPools
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
+Class >> methodSourceFrom: anObject [
+	^anObject asInstanceMethodsSource
 ]
 
 { #category : #'*PharoJs-Base-Exporter-App' }

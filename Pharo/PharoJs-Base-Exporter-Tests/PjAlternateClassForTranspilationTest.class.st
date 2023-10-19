@@ -18,6 +18,11 @@ PjAlternateClassForTranspilationTest class >> initialize [
 ]
 
 { #category : #any }
+PjAlternateClassForTranspilationTest >> initialize [ 
+	self m
+]
+
+{ #category : #any }
 PjAlternateClassForTranspilationTest >> m [
 	^ PjClassEForPackageTranspilationTest new
 ]
