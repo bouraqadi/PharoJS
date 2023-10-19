@@ -13,6 +13,21 @@ Class {
 	#category : #'PharoJs-Base-Exporter-Kernel'
 }
 
+{ #category : #analyzing }
+PjDependencyAnalyzer class >> analyzeAllClasses: classes [
+
+	^ self new
+		  analyzeAllClasses: classes;
+		  yourself
+]
+
+{ #category : #analyzing }
+PjDependencyAnalyzer class >> analyzeClass: aClass [
+	^self new
+		analyzeClass: aClass;
+		yourself 
+]
+
 { #category : #'analyzing classes' }
 PjDependencyAnalyzer >> addClassToConvert: aClass [
 

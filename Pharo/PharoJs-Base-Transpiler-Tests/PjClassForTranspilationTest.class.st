@@ -74,20 +74,22 @@ PjClassForTranspilationTest class >> javascriptName [
 
 { #category : #'pharojs support' }
 PjClassForTranspilationTest class >> jsTranspilationImportMethods [
+<pjMethodSources>
 	<pharoJsSkip>
 	^ {
-		PjNullMessageConversionForTest -> #(selectors).
-		PjClientForJavascriptInitializationTest class -> #(javascriptInitialize).
-	}
+		  (PjNullMessageConversionForTest -> #( selectors )).
+		  (PjClientForJavascriptInitializationTest class
+		   -> #( javascriptInitialize )) }
 ]
 
 { #category : #'pharojs support' }
 PjClassForTranspilationTest class >> jsTranspilationImportMethodsNonstandard [
+<pjMethodSources>
 	<pharoJsSkip>
 	^ {
-		PjNullMessageConversionForTest -> #(selector order:selector:).
-		PjClassExtensionForTest class -> #(javascriptName exampleForTest).
-	}
+		  (PjNullMessageConversionForTest -> #( selector #order:selector: )).
+		  (PjClassExtensionForTest class
+		   -> #( javascriptName exampleForTest )) }
 ]
 
 { #category : #any }
@@ -218,19 +220,19 @@ PjClassForTranspilationTest >> composedCalls [
 
 { #category : #initialization }
 PjClassForTranspilationTest >> initialize [
-	"Trick to ensure all selectors are transpiled = add a literal with their selector"
+	"Trick to ensure all selectors are transpiled by dependencyTranspiler = add a literal with their selector"
 
-	{ #optimizeAtTest. #cascade:. #whileAtEnd. #cascadeSuper.
-	#toDoWithObjectAsParameter. #aliasSpecialNameCaller.
-	#blockWithUnnamedParameterNonTail. #cascadeNested. #@. #composedCalls.
-	#m1. #native. #whileNotAtEnd. #add:and:. #alias. #twoPragmaWithAliases.
-	#cascadeSelf. #methodToSkip. #blockWithUnnamedParameter.
-	#alias2. #instanceMethodWithJsGenerator.
-	#m2. #aliasSpecialName. #alias1Caller. #aliasCaller. #blockWithNamedParameter.
-	#alias2Caller. #blocksReferencingSelf. #methodWithPoolVars.
-	#alias1Caller:. #m:. #alias1:. #nestedBlocksReferencingSelf.
-	#selector. #selectors:. #order:selector:. #javascriptName.
-	#exampleForTest }
+"instance side"
+#@. #add:and:. #alias. #alias1:. #alias1Caller. #alias1Caller:. #alias2. #alias2Caller. #aliasCaller. #aliasSpecialName. #aliasSpecialNameCaller. #blockWithNamedParameter. #blockWithUnnamedParameter. #blockWithUnnamedParameterNonTail. #blocksReferencingSelf. #cascade:. #cascadeNested. #cascadeSelf. #cascadeSuper. #composedCalls. #initialize. #instanceMethodWithJsGenerator. #m1. #m2. #m:. #methodToSkip. #methodWithPoolVars. #native. #nestedBlocksReferencingSelf. #optimizeAtTest. #toDoWithObjectAsParameter. #twoPragmaWithAliases. #whileAtEnd. #whileNotAtEnd.
+
+"instance imports"
+#selectors. #javascriptInitialize. #selector. #order:selector:.
+		
+"class side"
+#a. #b. #c1. #c2. #click:. #initialize.  #m1. #methodWithJsGenerator. #setupMessage.
+
+"class imports"
+#javascriptInitialize. #javascriptName. #exampleForTest
 ]
 
 { #category : #any }

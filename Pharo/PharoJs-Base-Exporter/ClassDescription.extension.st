@@ -19,9 +19,9 @@ ClassDescription >> allRawMethodSources [
 
 	<pharoJsSkip>
 	^ self allMethodSourcesProviders
-		  inject: IdentitySet new
+		  inject: #()
 		  into: [ :sources :provider |
-			  sources addAll:
+			  sources ,
 				  (provider valueWithReceiver: self instanceSide arguments: #(  )) ]
 ]
 

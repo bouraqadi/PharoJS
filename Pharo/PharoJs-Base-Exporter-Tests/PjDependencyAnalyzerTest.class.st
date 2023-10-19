@@ -294,6 +294,39 @@ PjDependencyAnalyzerTest >> testMethodSourceFromClassToSelectorsAssociation [
 ]
 
 { #category : #test }
+PjDependencyAnalyzerTest >> testMethodSourceFromMetaclassToSelectorsAssociation [
+
+	| fooBarSource defaultSource targetClass expectedMethods |
+	fooBarSource := factory newClass.
+	defaultSource := factory newClass.
+	#( foo bar ) do: [ :selector |
+		{
+			fooBarSource.
+			defaultSource } do: [ :cl | cl class compile: selector ] ].
+	defaultSource class compile: #zork.
+	targetClass := factory newClass.
+	targetClass class compile: ('methodSources
+		<{1}>
+		^\{{2} -> #(foo bar). {3}\}' format: {
+				 CompiledMethod methodSourcesPragmaKey.
+				 fooBarSource class name.
+				 defaultSource class name }).
+	targetClass compile: 'initialize
+		#zork. #foo. #bar'.
+	analyzer analyzeClass: targetClass.
+	self assertCollection: analyzer classesToConvert hasSameElements: {
+			PjObject.
+			targetClass }.
+	expectedMethods := {
+		                   (fooBarSource class >> #foo).
+		                   (fooBarSource class >> #bar).
+		                   (defaultSource class >> #zork) }.
+	self
+		assertCollection: (analyzer methodsToConvertFor: targetClass class)
+		hasSameElements: expectedMethods
+]
+
+{ #category : #test }
 PjDependencyAnalyzerTest >> testMethodSourcesAreNotInherited [
 	"Avoid inheriting duplicating methods imported by a superclass"
 

@@ -10,8 +10,7 @@ Class {
 { #category : #'transpiling classes' }
 PjDependencyTranspiler >> convertAllClasses: classes [
 
-	analyzer := PjDependencyAnalyzer new.
-	analyzer analyzeAllClasses: classes.
+	analyzer := PjDependencyAnalyzer analyzeAllClasses: classes.
 	super convertAllClasses: analyzer classesToConvert
 ]
 
