@@ -22,6 +22,13 @@ PjTCollection classSide >> jsTranspilationImportMethodsCollection [
 	^ {Collection.(OrderedCollection) }
 ]
 
+{ #category : #'pharojs support' }
+PjTCollection classSide >> methodsToSkip [
+
+	<pharoJsSkip>
+	^ { (OrderedCollection class >> #new) }
+]
+
 { #category : #testing }
 PjTCollection >> = aMagnitude [
 	^self explicitRequirement

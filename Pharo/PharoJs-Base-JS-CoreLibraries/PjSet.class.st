@@ -10,8 +10,9 @@ Class {
 { #category : #'pharoJs support' }
 PjSet class >> jsTranspilationImportMethods [
 
+	<pjMethodSources>
 	<pharoJsSkip>
-	^ { (Set) }
+	^ { (Set -> #( asSet )) }
 ]
 
 { #category : #enumerating }

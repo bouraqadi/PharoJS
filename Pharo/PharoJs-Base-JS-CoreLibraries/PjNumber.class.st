@@ -65,6 +65,7 @@ PjNumber class >> javascriptInitialize [
 { #category : #'pharoJs support' }
 PjNumber class >> jsTranspilationImportMethods [
 
+	<pjMethodSources>
 	<pharoJsSkip>
 	| selectorsForChronology numberSelectors |
 	selectorsForChronology := #( year years week weeks day days hour hours
@@ -79,7 +80,7 @@ PjNumber class >> jsTranspilationImportMethods [
 		                      asNumber squared even odd fractionPart
 		                      integerPart // strictlyPositive
 		                      positive negative raisedToInteger:
-		                      raisedTo: isNumber isZero quo: rem: #adaptToPoint:andSend:).
+		                      raisedTo: isNumber isZero quo: rem: #adaptToPoint:andSend: ).
 	^ self jsTranspilationImportMethodsMagnitude , {
 		  (Number -> numberSelectors).
 		  (Number class -> #( one )).
@@ -93,7 +94,8 @@ PjNumber class >> jsTranspilationImportMethods [
 			   #( denormalized e emax emin epsilon fmax fmin fminDenormalized
 			      fminNormalized halfPi infinity maxExactInteger
 			      nan negativeInfinity negativeZero one pi precision radix
-			      threePi twoPi zero )) }
+			      threePi twoPi zero )).
+		  (Integer -> #( isPrime sqrtFloor)) }
 ]
 
 { #category : #arithmetics }
@@ -221,6 +223,13 @@ PjNumber >> bitShift: shiftCount [
 { #category : #'bit manipulation' }
 PjNumber >> bitXor: arg [ 
 	<javascript: 'return this^arg'>
+]
+
+{ #category : #'mathematical functions' }
+PjNumber >> ceiling [
+
+	<javascript: 'return Math.ceil(this)'>
+	
 ]
 
 { #category : #converting }
@@ -388,6 +397,11 @@ PjNumber >> px [
 { #category : #converting }
 PjNumber >> radiansToDegrees [
 	^ self / RadiansPerDegree
+]
+
+{ #category : #'mathematical functions' }
+PjNumber >> raisedToInteger: anInteger [
+	<javascript: 'return this**anInteger'>
 ]
 
 { #category : #converting }
