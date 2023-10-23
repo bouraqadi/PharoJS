@@ -353,7 +353,11 @@ PjExporter >> withBasicTranspilerDo: aBlock [
 	transpiler addSelectorsToConvert: self coreSelectorsToConvert
 		,
 			#( size isJSPrimitiveType doesNotUnderstand: value className
-			   new = == javascriptInitialize + / - * at: at:put: ).
+			   new = == javascriptInitialize + / - * at: #at:put: connectDefaultToUrl:
+			   do: oidInstVarName).
+	PjBridgeAppClassDecorator withAllSubclasses
+	, PjWebsocketDelegate withAllSubclasses , { PjProxyManager } do: [
+		:cl | transpiler analyzer addNewClass: cl ].
 	transpiler analyzer
 		analyzeClass: PjCore;
 		removeClass: PjCore
