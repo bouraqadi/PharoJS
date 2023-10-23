@@ -351,10 +351,7 @@ PjExporter >> withBasicTranspilerDo: aBlock [
 	transpiler := currentTranspiler.
 	transpiler addAllGlobalsPools: basicTranspiler globalPools.
 	transpiler addSelectorsToConvert: self coreSelectorsToConvert
-		,
-			#( size isJSPrimitiveType doesNotUnderstand: value className
-			   new = == javascriptInitialize + / - * at: #at:put: connectDefaultToUrl:
-			   do: oidInstVarName startInstance ).
+		, #( isJSPrimitiveType javascriptInitialize ).
 	PjBridgeAppClassDecorator withAllSubclasses
 	, PjWebsocketDelegate withAllSubclasses , { PjProxyManager } do: [
 		:cl | transpiler analyzer addNewClass: cl ].

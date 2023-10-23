@@ -304,6 +304,12 @@ PjObject >> postCopy [
 	^self
 ]
 
+{ #category : #'primitive failure' }
+PjObject >> primitiveFailed [
+
+	self error: 'Pharo primitive cannot be called from JS'
+]
+
 { #category : #printing }
 PjObject >> printString [
 
