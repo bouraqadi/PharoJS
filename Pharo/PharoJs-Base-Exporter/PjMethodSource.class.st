@@ -24,6 +24,13 @@ PjMethodSource >> compiledMethodAt: selector [
 	^ methodsDict at: selector 
 ]
 
+{ #category : #accessing }
+PjMethodSource >> compiledMethodAt: selector ifAbsent: aBlock [
+
+	^ methodsDict at: selector  
+		                   ifAbsent: aBlock
+]
+
 { #category : #initialization }
 PjMethodSource >> initialize [ 
 	super initialize.

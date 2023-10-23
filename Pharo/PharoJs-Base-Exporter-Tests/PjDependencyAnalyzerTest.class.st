@@ -385,12 +385,11 @@ PjDependencyAnalyzerTest >> testMethodsSkippedInOneSourceCopiedFromNextSource [
 	#( 'foo
 	<pharoJsSkip>' bar zork ) do: [ :selector |
 		zorkSource compile: selector ].
-	zorkSource class compile: 'selectorsToSkip
-		^#(bar)
-	'.
 	fooBarSource := factory newClass.
 	#( foo bar zork ) do: [ :selector | fooBarSource compile: selector ].
 	targetClass := factory newClass.
+	targetClass class compile: ('methodsToSkip
+		^\{{1} >> #bar\}' format: {zorkSource name}).
 	targetClass class compile: ('methodSources
 		<{1}>
 		^\{{2}. {3}\}' format: {

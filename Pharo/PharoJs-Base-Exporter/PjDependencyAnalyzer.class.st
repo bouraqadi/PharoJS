@@ -36,7 +36,15 @@ PjDependencyAnalyzer >> addClassToConvert: aClass [
 ]
 
 { #category : #'analyzing methods' }
-PjDependencyAnalyzer >> addDependencyFrom: aLiteral [
+PjDependencyAnalyzer >> addDependenciesFromMethod: aMethod [
+
+	aMethod literalsDo: [ : aLiteral | self addDependencyFromLiteral: aLiteral ].
+	aMethod ast sentMessages do: [ :selector |
+		self addNewSelector: selector ]
+]
+
+{ #category : #'analyzing methods' }
+PjDependencyAnalyzer >> addDependencyFromLiteral: aLiteral [
 
 	aLiteral isSymbol ifTrue: [ ^ self addNewSelector: aLiteral ].
 	( aLiteral value isBehavior )
@@ -65,11 +73,11 @@ PjDependencyAnalyzer >> addMethodsToConvertFrom: aClass [
 	methodsToConvert := methodsToConvertDict
 		                    at: aClass
 		                    ifAbsentPut: [ IdentitySet new ].
-	aClass withMethodSourcesDo: [ :cl |
+	aClass withMethodSourcesDo: [ : methodSource |
 		self
 			addTo: methodsToConvert
-			methodsToConvertFrom: cl
-			selectors: missingSelectors ]
+			methodsToConvertFrom: methodSource
+			removeSelectorFrom: missingSelectors ]
 ]
 
 { #category : #'analyzing classes' }
@@ -103,36 +111,23 @@ PjDependencyAnalyzer >> addSelectorsToConvert: selectors [
 ]
 
 { #category : #'analyzing methods' }
-PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass selectors: missingSelectors [
+PjDependencyAnalyzer >> addTo: methods methodToConvertAt: candidateSelector from: methodSource missingSelectors: selectors [
 
-	| methods |
-	methods := missingSelectors collect: [ : aSymbol |
-		           aClass compiledMethodAt: aSymbol ] 
-			thenReject: [: aMethod | (self shouldSkipMethod: aMethod)].
-	methods do: [ :each |
-				methodsToConvert add: each.
-				missingSelectors remove: each selector.
-				each literalsDo: [ :each1 | self addDependencyFrom: each1 ].
-				each ast sentMessages do: [ :selector |
-					self addNewSelector: selector ].
-				 ]
+	| candidateMethod |
+	candidateMethod := methodSource
+		                   compiledMethodAt: candidateSelector
+		                   ifAbsent: [ ^ self ].
+	(self shouldSkipMethod: candidateMethod) ifTrue: [ ^ self ].
+	selectors remove: candidateSelector.
+	methods add: candidateMethod.
+	self addDependenciesFromMethod: candidateMethod
 ]
 
 { #category : #'analyzing methods' }
-PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass selectors: selectors skipBlock: skipBlock [
+PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: methodSource removeSelectorFrom: missingSelectors [
 
-	| methods |
-	methods := selectors collect: [ :each |
-		           aClass compiledMethodAt: each ].
-	methods do: [ :each |
-		(self shouldSkipMethod: each)
-			ifTrue: [ self ]
-			ifFalse: [
-				methodsToConvert add: each.
-				each literalsDo: [ :each1 | self addDependencyFrom: each1 ].
-				each ast sentMessages do: [ :selector |
-					self addNewSelector: selector ].
-				self ] ]
+missingSelectors copy do:   [: selector | 
+	self addTo: methodsToConvert  methodToConvertAt: selector from: methodSource missingSelectors: missingSelectors  ]
 ]
 
 { #category : #analyzing }
