@@ -105,8 +105,8 @@ PjBridgeClient >> initializeWithBridge: aBridge [
 { #category : #accessing }
 PjBridgeClient >> jsGlobalNames [
 
-	^ (self appClass allSharedPoolsRecursive select:
-		   #isPharoOnlyClass) flatCollectAsSet: #classVarNames
+	^ (self appClass allSharedPoolsRecursive select: #isPharoOnly)
+		  flatCollectAsSet: #classVarNames
 ]
 
 { #category : #accessing }

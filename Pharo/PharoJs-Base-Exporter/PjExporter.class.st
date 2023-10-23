@@ -137,6 +137,13 @@ PjExporter >> coreClass [
 	^ self class coreClass
 ]
 
+{ #category : #writing }
+PjExporter >> coreSelectorsToConvert [
+	| coreMetaclass |
+	coreMetaclass := PjCore class.
+	^coreMetaclass selectors reject: [ : each | (coreMetaclass >> each) isPharoOnly ]
+]
+
 { #category : #'writing low-level' }
 PjExporter >> cr [
 
@@ -342,7 +349,14 @@ PjExporter >> withBasicTranspilerDo: aBlock [
 	transpiler := basicTranspiler.
 	aBlock value.
 	transpiler := currentTranspiler.
-	transpiler addAllGlobalsPools:  basicTranspiler globalPools 
+	transpiler addAllGlobalsPools: basicTranspiler globalPools.
+	transpiler addSelectorsToConvert: self coreSelectorsToConvert
+		,
+			#( size isJSPrimitiveType doesNotUnderstand: value className
+			   new = == javascriptInitialize + / - * at: at:put: ).
+	transpiler analyzer
+		analyzeClass: PjCore;
+		removeClass: PjCore
 ]
 
 { #category : #writing }
@@ -597,7 +611,7 @@ PjExporter >> writeJsCode [
 
 	self appClass beforeExportApp.
 	self writeSetupCode.
-	self withBasicTranspilerDo: [self writeCore].
+	self withBasicTranspilerDo: [ self writeCore].
 	self writeClasses.
 	self writeLaunchCode.
 	self appClass afterExportApp

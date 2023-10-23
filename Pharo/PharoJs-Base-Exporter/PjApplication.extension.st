@@ -148,9 +148,9 @@ PjApplication class >> exporterClass [
 
 { #category : #'*PharoJs-Base-Exporter-App' }
 PjApplication class >> globalsPools [
+
 	<pharoJsSkip>
-	
-	^ self allSharedPoolsRecursive select: #isPharoOnlyClass
+	^ self allSharedPoolsRecursive select: #isPharoOnly
 ]
 
 { #category : #'*PharoJs-Base-Exporter-App' }

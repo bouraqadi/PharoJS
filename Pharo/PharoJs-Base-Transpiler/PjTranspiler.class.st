@@ -135,6 +135,11 @@ PjTranspiler >> aliasesDict: aliasesDict at: methodSelector addAll: newAliases [
 	aliases addAll: newAliases
 ]
 
+{ #category : #accessing }
+PjTranspiler >> analyzer [
+	^analyzer 
+]
+
 { #category : #initialization }
 PjTranspiler >> analyzerClass [
 	^PjSkipCodeAnalyzer 

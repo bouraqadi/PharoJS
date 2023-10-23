@@ -559,29 +559,30 @@ PjAstConverter >> visitCascadeNode: aRBCascadeNode [
 
 { #category : #visiting }
 PjAstConverter >> visitClassOrPoolVariable: aRBVariableNode id: id [
+
 	| variableClass |
 	variableClass := self classForVariable: aRBVariableNode.
-	(variableClass instanceSide allClassVarNames includes: id)
-		ifTrue: [ self signal: 'class variable' ifClosedBlockReferences: id.
-			[ variableClass isNil
-				or: [ variableClass classVarNames includes: id ] ]
-				whileFalse: [ variableClass := variableClass superclass ].
-			^ (PjClassVariableNode identifier: id)
-						poolReference: variableClass;
-						myClass: self classForConversion;
-						yourself
-				 ].
+	(variableClass instanceSide allClassVarNames includes: id) ifTrue: [
+		self signal: 'class variable' ifClosedBlockReferences: id.
+		[
+		variableClass isNil or: [ variableClass classVarNames includes: id ] ]
+			whileFalse: [ variableClass := variableClass superclass ].
+		^ (PjClassVariableNode identifier: id)
+			  poolReference: variableClass;
+			  myClass: self classForConversion;
+			  yourself ].
 	(variableClass instanceSide sharedPoolOfVarNamedRecursive: id)
-		ifNotNil: [ :pool | 
-			pool isPharoOnlyClass
-				ifTrue: [ self discoveredGlobalsPool: pool.
-					^ PjGlobalNode identifier: id ].
+		ifNotNil: [ :pool |
+			pool isPharoOnly ifTrue: [
+				self discoveredGlobalsPool: pool.
+				^ PjGlobalNode identifier: id ].
 			self signal: 'pool' ifClosedBlockReferences: id.
 			^ (PjPoolVariableNode identifier: id)
-					poolReference: pool;
-					myClass: self classForConversion;
-					yourself ].
-	PjJavascriptTranspilationError signal: 'pool or class variable isn''t: ' , id
+				  poolReference: pool;
+				  myClass: self classForConversion;
+				  yourself ].
+	PjJavascriptTranspilationError signal:
+		'pool or class variable isn''t: ' , id
 ]
 
 { #category : #visiting }

@@ -94,7 +94,7 @@ PjDependencyAnalyzer >> addNewClass: aClass [
 { #category : #'analyzing classes' }
 PjDependencyAnalyzer >> addNewClassWithSuperclasses: aClass [
 
-	aClass isPharoOnlyClass ifTrue: [ ^ self ].
+	aClass isPharoOnly ifTrue: [ ^ self ].
 	aClass withAllSuperclassesDo: [ :each | self addNewClass: each ]
 ]
 
@@ -130,10 +130,16 @@ PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass sel
 ]
 
 { #category : #analyzing }
+PjDependencyAnalyzer >> analyzeAll [
+
+	[ newClasses isEmpty ] whileFalse: [ self findNewClasses ]
+]
+
+{ #category : #analyzing }
 PjDependencyAnalyzer >> analyzeAllClasses: classes [
 
 	classes do: [ :each | self addNewClassWithSuperclasses: each ].
-	[ newClasses isEmpty ] whileFalse: [ self findNewClasses ]
+	self analyzeAll
 ]
 
 { #category : #analyzing }
@@ -181,6 +187,12 @@ PjDependencyAnalyzer >> methodsToConvertDict [
 PjDependencyAnalyzer >> methodsToConvertFor: aClass [
 
 	^ self methodsToConvertDict at: aClass
+]
+
+{ #category : #accessing }
+PjDependencyAnalyzer >> removeClass: aClass [
+	classesToConvert remove: aClass.
+	methodsToConvertDict removeKey: aClass
 ]
 
 { #category : #initialization }

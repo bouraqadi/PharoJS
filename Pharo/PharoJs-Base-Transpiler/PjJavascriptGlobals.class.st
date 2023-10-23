@@ -22,7 +22,7 @@ PjJavascriptGlobals class >> domPolyfill: aTranspiler [
 ]
 
 { #category : #transpiling }
-PjJavascriptGlobals class >> isPharoOnlyClass [
+PjJavascriptGlobals class >> isPharoOnly [
 
 	<pharoJsSkip>
 	^ true

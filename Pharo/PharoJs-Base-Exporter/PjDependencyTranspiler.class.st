@@ -5,6 +5,12 @@ Class {
 }
 
 { #category : #initialization }
+PjDependencyTranspiler >> addClassesToConvert: classes [
+
+	analyzer addClassesToConvert: classes
+]
+
+{ #category : #initialization }
 PjDependencyTranspiler >> addSelectorsToConvert: selectors [
 	analyzer addSelectorsToConvert: selectors 
 ]
@@ -12,6 +18,11 @@ PjDependencyTranspiler >> addSelectorsToConvert: selectors [
 { #category : #initialization }
 PjDependencyTranspiler >> analyzerClass [
 	^PjDependencyAnalyzer
+]
+
+{ #category : #'transpiling classes' }
+PjDependencyTranspiler >> convertAll [
+	super convertAllClasses: analyzer classesToConvert
 ]
 
 { #category : #'transpiling classes' }

@@ -95,13 +95,13 @@ PjDependentTranspilerOLD >> convertMethodAst: aMethod [
 { #category : #transpiling }
 PjDependentTranspilerOLD >> convertMethodAsts: aClass newClasses: newClasses [
 
-	(convertedClasses includes: aClass)
-		ifFalse: [ aClass superclass
-				ifNotNil: [ self addClassToConvert: aClass superclass ].
-			self
-				addClassesToConvert: (aClass instanceSide sharedPools reject: #isPharoOnlyClass).
-			convertedClasses add: aClass.
-			newClasses add: aClass ].
+	(convertedClasses includes: aClass) ifFalse: [
+		aClass superclass ifNotNil: [
+			self addClassToConvert: aClass superclass ].
+		self addClassesToConvert:
+			(aClass instanceSide sharedPools reject: #isPharoOnly).
+		convertedClasses add: aClass.
+		newClasses add: aClass ].
 	self
 		withMethodsOf: aClass
 		do: [ :aMethod | self convertMethodAst: aMethod ].
