@@ -23,7 +23,8 @@ Class {
 		'poolsUsed',
 		'pharoJsSelectorPrefix',
 		'instanceMethodsAliasesDict',
-		'classMethodsAliasesDict'
+		'classMethodsAliasesDict',
+		'globalPools'
 	],
 	#category : #'PharoJs-Base-Transpiler-Kernel'
 }
@@ -151,12 +152,12 @@ PjTranspiler >> classVarsPoolName [
 PjTranspiler >> convertAllClasses: classes [
 
 	| actualClassesToConvert classesInWriteOrder |
-	beforeCodeOutputHook ifNotNil: [ beforeCodeOutputHook value ].
+	beforeCodeOutputHook ifNotNil: [ beforeCodeOutputHook value: globalPools ].
 	actualClassesToConvert := classes asIdentitySet collect:
 		                          #classToUseForJsConversion.
 	classesInWriteOrder := self orderForWriting: actualClassesToConvert.
-	classesInWriteOrder do: [ :aClass | 
-		self writeClassDefinitionOf: aClass. ].
+	classesInWriteOrder do: [ :aClass |
+		self writeClassDefinitionOf: aClass ].
 	self writeDnuList.
 	self writeClassInitializeOfAll: classesInWriteOrder
 ]
@@ -316,6 +317,7 @@ PjTranspiler >> generateCodeStringFrom: jsAst [
 
 { #category : #initialization }
 PjTranspiler >> initialize [
+
 	super initialize.
 	generatedMethods := Dictionary new.
 	converter := self defaultConverterClass new.
@@ -328,6 +330,7 @@ PjTranspiler >> initialize [
 	poolsUsed := IdentityDictionary new.
 	classesReferencingCache := IdentityDictionary new.
 	self pharoJsSelectorPrefix: '_'.
+	globalPools := Set new
 ]
 
 { #category : #'transpiling aliases' }
@@ -372,14 +375,20 @@ PjTranspiler >> lineEnding [
 
 { #category : #ordering }
 PjTranspiler >> moveHighestPriorityClassesIn: initialClasses to: orderedClasses with: doesReferenceBlock [
+
 	| nextClasses |
-	nextClasses  := initialClasses select: [: aClass | 
-			initialClasses noneSatisfy: [: bClass | 
-				self should: bClass occurBefore: aClass with: doesReferenceBlock]].
-	nextClasses isEmpty ifTrue: [ ^ converter transpilationError: 'circular class dependency' ].
-	(nextClasses includes: PjObject) ifTrue: [ nextClasses size > 1 ifTrue: [self halt] ].
+	nextClasses := initialClasses select: [ :aClass |
+		               initialClasses noneSatisfy: [ :bClass |
+			               self
+				               should: bClass
+				               occurBefore: aClass
+				               with: doesReferenceBlock ] ].
+	nextClasses isEmpty ifTrue: [
+		^ converter transpilationError: 'circular class dependency' ].
+	(nextClasses includes: PjObject) ifTrue: [
+		nextClasses size > 1 ifTrue: [ self halt ] ].
 	initialClasses removeAll: nextClasses.
-	orderedClasses addAll: nextClasses.
+	orderedClasses addAll: nextClasses
 ]
 
 { #category : #'transpiling classes' }

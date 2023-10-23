@@ -10,8 +10,7 @@ Class {
 		'convertedClasses',
 		'alreadyDefinedClasses',
 		'alreadyInitializedClasses',
-		'alreadyVariablesDeclaredClasses',
-		'globalPools'
+		'alreadyVariablesDeclaredClasses'
 	],
 	#category : #'PharoJs-Base-Exporter-Kernel'
 }
@@ -156,7 +155,7 @@ PjDependentTranspilerOLD >> initialize [
 	alreadyDefinedClasses := Set new.
 	alreadyInitializedClasses := Set new.
 	alreadyVariablesDeclaredClasses := Set new.
-	globalPools := Set new.
+
 ]
 
 { #category : #invalidating }

@@ -354,6 +354,13 @@ PjObject >> species [
 	^ self class
 ]
 
+{ #category : #'error handling' }
+PjObject >> subclassResponsibility [
+
+	self error:
+		'Subclass Responsibility: Abstract method not implemented by subclass'
+]
+
 { #category : #reflection }
 PjObject >> typeof [
 	<javascript: 'return typeof this'>

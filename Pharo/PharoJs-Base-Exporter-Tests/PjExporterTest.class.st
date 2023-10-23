@@ -10,6 +10,12 @@ Class {
 	#category : #'PharoJs-Base-Exporter-Tests-Tests'
 }
 
+{ #category : #testing }
+PjExporterTest >> assertSkipping: addedClasses [
+	exporter addAllClasses: addedClasses.
+	self assert: (exporter classes intersection: addedClasses) isEmpty
+]
+
 { #category : #running }
 PjExporterTest >> classToTranspile [
 	^ PjClassExtensionForTest
@@ -141,18 +147,22 @@ PjExporterTest >> testPolyfills [
 
 { #category : #testing }
 PjExporterTest >> testTestResourcesAreIgnored [
-	exporter addAllClasses: {TestResource}.
-	self assert: exporter classes isEmpty.
+
+	self assertSkipping:{ TestResource }.
+
 ]
 
 { #category : #testing }
 PjExporterTest >> testTestsAreIgnored [
-	exporter addAllClasses: {TestCase. PjExporterTest}.
-	self assert: exporter classes isEmpty.
+
+	self assertSkipping: {
+		               TestCase.
+		               PjExporterTest }.
+
 ]
 
 { #category : #testing }
 PjExporterTest >> testTraitsAreIgnored [
-	exporter addClass: TComparable.
-	self assert: exporter classes isEmpty.
+
+self assertSkipping: {TComparable}
 ]

@@ -1,8 +1,5 @@
-"
-I use PjTranspiler to export a PharoJs application to a stream.
-"
 Class {
-	#name : #PjExporter,
+	#name : #PjExporterOLD,
 	#superclass : #Object,
 	#instVars : [
 		'classes',
@@ -18,54 +15,54 @@ Class {
 }
 
 { #category : #accessing }
-PjExporter class >> bootstrapClasses [
+PjExporterOLD class >> bootstrapClasses [
 	^ {Object. Boolean. Number. String. UndefinedObject. BlockClosure. Error. Array. Class}
 ]
 
 { #category : #accessing }
-PjExporter class >> coreClass [
+PjExporterOLD class >> coreClass [
 	^ self transpilerClass coreClass
 ]
 
 { #category : #'instance creation' }
-PjExporter class >> newWithAppClass: aClass [
+PjExporterOLD class >> newWithAppClass: aClass [
 	^self new
 		initializeWithAppClass: aClass;
 		yourself
 ]
 
 { #category : #accessing }
-PjExporter class >> transpilerClass [
+PjExporterOLD class >> transpilerClass [
 	^ PjDependencyTranspiler 
 ]
 
 { #category : #'writing low-level' }
-PjExporter >> << aString [
+PjExporterOLD >> << aString [
 
 	jsStream << aString
 ]
 
 { #category : #adding }
-PjExporter >> addAllClasses: someClasses [
+PjExporterOLD >> addAllClasses: someClasses [
 
 	someClasses do: [ :each | self addClass: each ]
 ]
 
 { #category : #adding }
-PjExporter >> addAllPackages: packageNames [
+PjExporterOLD >> addAllPackages: packageNames [
 
 	packageNames do: [ :each | self addPackage: each ]
 ]
 
 { #category : #adding }
-PjExporter >> addClass: aClass [
+PjExporterOLD >> addClass: aClass [
 
 	(self isExportable: aClass) ifFalse: [ ^ self ].
 	self classes add: aClass
 ]
 
 { #category : #adding }
-PjExporter >> addPackage: packageName [
+PjExporterOLD >> addPackage: packageName [
 
 	"gather all classes from the package with name packageName. This includes definedClasses
 	and extendedClasses. As there could be a Metaclass in the list we collect only the 
@@ -77,31 +74,25 @@ PjExporter >> addPackage: packageName [
 ]
 
 { #category : #accessing }
-PjExporter >> appClass [
+PjExporterOLD >> appClass [
 
 	^ appClass
 ]
 
-{ #category : #writing }
-PjExporter >> basicTranspilerClass [
-
-	^ PjTranspiler
-]
-
 { #category : #accessing }
-PjExporter >> bootstrapClasses [
+PjExporterOLD >> bootstrapClasses [
 
 	^ self class bootstrapClasses
 ]
 
 { #category : #accessing }
-PjExporter >> classes [
+PjExporterOLD >> classes [
 
 	^ classes
 ]
 
 { #category : #adding }
-PjExporter >> classesInPackageNamed: packageName [
+PjExporterOLD >> classesInPackageNamed: packageName [
 
 	| package tagName tag |
 	package := RPackage organizer packageMatchingExtensionName:
@@ -113,7 +104,7 @@ tag := package classTagNamed: tagName.
 ]
 
 { #category : #loading }
-PjExporter >> convertAllClassesToJs: someClasses [
+PjExporterOLD >> convertAllClassesToJs: someClasses [
 
 	someClasses do: [ :aClass | self invalidateClass: aClass ].
 	self addAllClasses: someClasses.
@@ -123,32 +114,40 @@ PjExporter >> convertAllClassesToJs: someClasses [
 			  writeDnu: true ]
 ]
 
-{ #category : #'writing core' }
-PjExporter >> copyMethodsSelector [
+{ #category : #writing }
+PjExporterOLD >> copyMethodsSelector [
 
 	^ #copyMethods
 ]
 
 { #category : #accessing }
-PjExporter >> coreClass [
+PjExporterOLD >> coreClass [
 
 	^ self class coreClass
 ]
 
 { #category : #'writing low-level' }
-PjExporter >> cr [
+PjExporterOLD >> cr [
 
 	jsStream lf
 ]
 
 { #category : #'writing low-level' }
-PjExporter >> crtab [
+PjExporterOLD >> crtab [
 
 	jsStream cr; tab
 ]
 
+{ #category : #writing }
+PjExporterOLD >> dnuHook [
+
+	^ [ 
+	  self writeGlobalsPolyfills: nil.
+	  true ]
+]
+
 { #category : #'writing core' }
-PjExporter >> fixInheritanceLinkOfMethodDefinition [
+PjExporterOLD >> fixInheritanceLinkOfMethodDefinition [
 	^'function(aClass) {
     if (!aClass.hasOwnProperty("subclasses")) {
         aClass.subclasses = [];
@@ -169,13 +168,13 @@ PjExporter >> fixInheritanceLinkOfMethodDefinition [
 ]
 
 { #category : #'writing core' }
-PjExporter >> fixInheritanceLinkOfSelector [
+PjExporterOLD >> fixInheritanceLinkOfSelector [
 
 	^ #fixInheritanceLinkOf
 ]
 
 { #category : #'writing core' }
-PjExporter >> fixMetaclassOfMethodDefinition [
+PjExporterOLD >> fixMetaclassOfMethodDefinition [
 	^'function(aClass)
 {
   if (aClass === this) { return this; }
@@ -189,54 +188,54 @@ PjExporter >> fixMetaclassOfMethodDefinition [
 ]
 
 { #category : #'writing core' }
-PjExporter >> fixMetaclassOfSelector [
+PjExporterOLD >> fixMetaclassOfSelector [
 
 	^ #fixMetaclassOf
 ]
 
 { #category : #accessing }
-PjExporter >> headerLine [
+PjExporterOLD >> headerLine [
 
 	^ self appClass headerLine
 ]
 
 { #category : #'initialize-release' }
-PjExporter >> initialize [
+PjExporterOLD >> initialize [
 
 	super initialize.
-	classes := Set withAll: self bootstrapClasses.
+	classes := Set new.
 	globalsPools := Set new.
-
+	self transpiler: self transpilerClass new.
+	self transpiler addAllOptionalConversions "Except: 0 to: 1/2".
+	self setUpForPolyfill
 ]
 
-{ #category : #'initialize-release' }
-PjExporter >> initializeWithAppClass: aClass [
+{ #category : #accessing }
+PjExporterOLD >> initializeWithAppClass: aClass [
 
 	appClass := aClass.
-	transpiler := self newTranspiler: self transpilerClass.
-	self transpiler beforeCodeOutputHook: [ :pools |
-		self writeGlobalsPolyfills: pools ].
+	transpiler pharoJsSelectorPrefix: aClass pharoJsSelectorPrefix.
 	self addAllClasses: appClass appClasses.
 	self addAllPackages: appClass appPackages
 ]
 
-{ #category : #'writing core' }
-PjExporter >> installAllAliasesSelector [
+{ #category : #writing }
+PjExporterOLD >> installAllAliasesSelector [
 	^PjTranspiler installAllAliasesSelector
 ]
 
 { #category : #'writing core' }
-PjExporter >> installClassSelector [
+PjExporterOLD >> installClassSelector [
 	^self transpiler installClassSelector
 ]
 
-{ #category : #'writing core' }
-PjExporter >> installJsClassPlaceholderSelector [
+{ #category : #writing }
+PjExporterOLD >> installJsClassPlaceholderSelector [
 	^self transpiler installJsClassPlaceholderSelector
 ]
 
 { #category : #testing }
-PjExporter >> isExportable: aClass [
+PjExporterOLD >> isExportable: aClass [
 
 	aClass ifNil: [ ^ false ].
 	aClass isTrait ifTrue: [ ^false ].
@@ -246,13 +245,13 @@ PjExporter >> isExportable: aClass [
 ]
 
 { #category : #'test support' }
-PjExporter >> javascriptCode [
+PjExporterOLD >> javascriptCode [
 
 	^ String streamContents: [: aStream | self writeJsCodeOn: aStream]
 ]
 
 { #category : #'writing low-level' }
-PjExporter >> jsStream: aStream do: aBlock [
+PjExporterOLD >> jsStream: aStream do: aBlock [
 
 	| savedStream |
 	savedStream := jsStream.
@@ -263,95 +262,82 @@ PjExporter >> jsStream: aStream do: aBlock [
 ]
 
 { #category : #accessing }
-PjExporter >> launchBlock [
+PjExporterOLD >> launchBlock [
 
 	^ launchBlock ifNil: [ self appClass appLaunchBlock ]
 ]
 
 { #category : #accessing }
-PjExporter >> launchBlock: aBlock [
+PjExporterOLD >> launchBlock: aBlock [
 
 	launchBlock := aBlock
 ]
 
-{ #category : #'initialize-release' }
-PjExporter >> newTranspiler: transpilerClass [
-
-	^transpilerClass new
-	 addAllOptionalConversions
-	 onStream: self;
-	 pharoJsSelectorPrefix: appClass pharoJsSelectorPrefix;
-	yourself
-]
-
 { #category : #'writing low-level' }
-PjExporter >> nextPut: aCharacter [
+PjExporterOLD >> nextPut: aCharacter [
 
 	jsStream nextPut: aCharacter
 ]
 
 { #category : #'writing low-level' }
-PjExporter >> nextPutAll: aString [
+PjExporterOLD >> nextPutAll: aString [
 
 	jsStream nextPutAll: aString
 ]
 
-{ #category : #'writing low-level' }
-PjExporter >> pharoJsSelectorPrefix [
+{ #category : #writing }
+PjExporterOLD >> nonBootstrapClasses [
+
+	| actualBootstrapClasses |
+	actualBootstrapClasses := self bootstrapClasses asSet collect: #classToUseForJsConversion.
+	^self classes reject: [ :setClass | 
+			actualBootstrapClasses includes: setClass classToUseForJsConversion]
+]
+
+{ #category : #writing }
+PjExporterOLD >> pharoJsSelectorPrefix [
 
 	^ self transpiler pharoJsSelectorPrefix
 ]
 
+{ #category : #'initialize-release' }
+PjExporterOLD >> setUpForPolyfill [
+
+	self transpiler beforeCodeOutputHook: [: pools | self writeGlobalsPolyfills: pools]
+]
+
 { #category : #accessing }
-PjExporter >> setupCode [
+PjExporterOLD >> setupCode [
 
 	^ self appClass setupCode
 ]
 
-{ #category : #'writing low-level' }
-PjExporter >> space [
+{ #category : #writing }
+PjExporterOLD >> space [
 	jsStream space
 ]
 
 { #category : #accessing }
-PjExporter >> transpiler [
+PjExporterOLD >> transpiler [
 
 	^ transpiler
 ]
 
 { #category : #accessing }
-PjExporter >> transpiler: anObject [
+PjExporterOLD >> transpiler: aTranspiler [
 
-	transpiler := anObject
+	transpiler := aTranspiler.
+	transpiler onStream: self
 ]
 
-{ #category : #'initialize-release' }
-PjExporter >> transpilerClass [
+{ #category : #accessing }
+PjExporterOLD >> transpilerClass [
 
 	^ self class transpilerClass
 ]
 
-{ #category : #writing }
-PjExporter >> withBasicTranspilerDo: aBlock [
-
-	| currentTranspiler basicTranspiler |
-	currentTranspiler := self transpiler.
-	basicTranspiler := self newTranspiler: self basicTranspilerClass.
-	transpiler := basicTranspiler.
-	aBlock value.
-	transpiler := currentTranspiler
-]
-
-{ #category : #writing }
-PjExporter >> writeClasses [
-
-	self transpiler
-		convertAllClasses: self classes
-		writeDnu: true
-]
-
 { #category : #'writing core' }
-PjExporter >> writeCore [
+PjExporterOLD >> writeCore [
 
 	self writeCoreObject.
 	self writeCoreClass.
@@ -363,29 +349,31 @@ PjExporter >> writeCore [
 		cr;
 		writeNameForClass: PjCore;
 		<< $.;
-		<< self transpiler pharoJsSelectorPrefix;
+		<< transpiler pharoJsSelectorPrefix;
 		<< 'initializeCore();';
 		cr
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreClass [
+PjExporterOLD >> writeCoreClass [
 
 	self transpiler
+		convertMethodAsts: PjClass newClasses: Set new;
 		writeClassDefinitionOf: PjClass
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObject [
+PjExporterOLD >> writeCoreObject [
 
 	self writeCoreObjectCreation.
 	self writeCoreObjectBasicMethods.
 	self transpiler
+		convertMethodAsts: PjCore newClasses: Set new;
 		writeClassDefinitionOf: PjCore
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObjectBasicMethods [
+PjExporterOLD >> writeCoreObjectBasicMethods [
 
 	self
 		writeCoreObjectCopyMethods;
@@ -397,7 +385,7 @@ PjExporter >> writeCoreObjectBasicMethods [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObjectCopyMethods [
+PjExporterOLD >> writeCoreObjectCopyMethods [
 
 	self transpiler
 		cr;
@@ -419,7 +407,7 @@ PjExporter >> writeCoreObjectCopyMethods [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObjectCreation [
+PjExporterOLD >> writeCoreObjectCreation [
 
 	self transpiler
 		<< 'globalThis.';
@@ -430,7 +418,7 @@ PjExporter >> writeCoreObjectCreation [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObjectInstallAliasesMethods [
+PjExporterOLD >> writeCoreObjectInstallAliasesMethods [
 
 	| coreClassName |
 	coreClassName := PjCore instanceSide nameToUseForJsConversion.
@@ -471,7 +459,7 @@ PjExporter >> writeCoreObjectInstallAliasesMethods [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObjectInstallClassExtensionMethod [
+PjExporterOLD >> writeCoreObjectInstallClassExtensionMethod [
 
 	self transpiler
 		writeNameForClass: PjCore;
@@ -523,7 +511,7 @@ PjExporter >> writeCoreObjectInstallClassExtensionMethod [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeCoreObjectInstallClassMethod [
+PjExporterOLD >> writeCoreObjectInstallClassMethod [
 
 	self transpiler
 		writeNameForClass: PjCore;
@@ -554,7 +542,7 @@ PjExporter >> writeCoreObjectInstallClassMethod [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeFixInheritanceLinkOfMethod [
+PjExporterOLD >> writeFixInheritanceLinkOfMethod [
 
 	self transpiler
 		writeNameForClass: PjCore;
@@ -567,7 +555,7 @@ PjExporter >> writeFixInheritanceLinkOfMethod [
 ]
 
 { #category : #'writing core' }
-PjExporter >> writeFixMetaclassOfMethod [
+PjExporterOLD >> writeFixMetaclassOfMethod [
 
 	self transpiler
 		writeNameForClass: PjCore;
@@ -579,10 +567,10 @@ PjExporter >> writeFixMetaclassOfMethod [
 		cr
 ]
 
-{ #category : #'initialize-release' }
-PjExporter >> writeGlobalsPolyfills: pools [
+{ #category : #writing }
+PjExporterOLD >> writeGlobalsPolyfills: pools [
 
-	pools do: [ :pool |
+	pools do: [ :pool | 
 		self appClass
 			polyfill: pool
 			withTranspiler: self transpiler
@@ -590,30 +578,45 @@ PjExporter >> writeGlobalsPolyfills: pools [
 ]
 
 { #category : #writing }
-PjExporter >> writeJsCode [
+PjExporterOLD >> writeJsCode [
 
 	self appClass beforeExportApp.
-	self writeSetupCode.
-	self withBasicTranspilerDo: [self writeCore].
-	self writeClasses.
+	self writeJsCoreAndBootstrap.
+	self writeNonBootstrapClasses.
 	self writeLaunchCode.
 	self appClass afterExportApp
 ]
 
 { #category : #writing }
-PjExporter >> writeJsCodeOn: aStream [
+PjExporterOLD >> writeJsCodeOn: aStream [
 
 	self jsStream: aStream do: [ self writeJsCode ]
 ]
 
 { #category : #writing }
-PjExporter >> writeLaunchCode [
+PjExporterOLD >> writeJsCoreAndBootstrap [
+
+	self nextPutAll: self setupCode; cr.
+	self writeCore.
+	self transpiler convertAllClasses: self bootstrapClasses writeDnu: false
+]
+
+{ #category : #writing }
+PjExporterOLD >> writeLaunchCode [
 
 	self transpiler convertAndWriteClosedBlock: self launchBlock
 ]
 
+{ #category : #writing }
+PjExporterOLD >> writeNonBootstrapClasses [
+
+	self transpiler
+		convertAllClasses: self nonBootstrapClasses
+		writeDnu: true
+]
+
 { #category : #'writing core' }
-PjExporter >> writePropertyDefinitionFunctionFrom: sourceString at: sourceSelector to: targetString [
+PjExporterOLD >> writePropertyDefinitionFunctionFrom: sourceString at: sourceSelector to: targetString [
 
 	self
 		writePropertyDefinitionFunctionFrom: sourceString
@@ -623,7 +626,7 @@ PjExporter >> writePropertyDefinitionFunctionFrom: sourceString at: sourceSelect
 ]
 
 { #category : #'writing core' }
-PjExporter >> writePropertyDefinitionFunctionFrom: sourceString at: sourceSelector to: targetString at: targetSelector [
+PjExporterOLD >> writePropertyDefinitionFunctionFrom: sourceString at: sourceSelector to: targetString at: targetSelector [
 
 	self transpiler
 		<< '(';
@@ -640,15 +643,7 @@ PjExporter >> writePropertyDefinitionFunctionFrom: sourceString at: sourceSelect
 ]
 
 { #category : #'writing core' }
-PjExporter >> writePropertyDefinitionFunctionFrom: sourceString to: targetString [
+PjExporterOLD >> writePropertyDefinitionFunctionFrom: sourceString to: targetString [
 
 	self writePropertyDefinitionFunctionFrom: sourceString at: 'name' to: targetString at: 'name'
-]
-
-{ #category : #writing }
-PjExporter >> writeSetupCode [
-	self
-		nextPutAll: self setupCode;
-		cr.
-
 ]
