@@ -54,6 +54,7 @@ PjCoverageAnalyzer >> analyzeAllImageClasses [
 PjCoverageAnalyzer >> analyzeClass: aClass index: index [
 
 	| result percent percentString |
+	self currentClass: aClass.
 	percent := index * 100.0/processedClasses size.
 	percentString := percent printShowingDecimalPlaces: 2.
 	Transcript

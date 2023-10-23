@@ -1,14 +1,13 @@
 Class {
 	#name : #PjDependencyAnalyzer,
-	#superclass : #Object,
+	#superclass : #PjSkipCodeAnalyzer,
 	#instVars : [
 		'classesToConvert',
 		'newClasses',
 		'selectorsToConvert',
 		'previousSelectorsDict',
 		'methodsToConvertDict',
-		'newSelectors',
-		'currentClass'
+		'newSelectors'
 	],
 	#category : #'PharoJs-Base-Exporter-Kernel'
 }
@@ -31,7 +30,7 @@ PjDependencyAnalyzer class >> analyzeClass: aClass [
 { #category : #'analyzing classes' }
 PjDependencyAnalyzer >> addClassToConvert: aClass [
 
-	currentClass := aClass.
+	self currentClass: aClass.
 	classesToConvert add: aClass.
 	self addInstanceAndClassMethodsFrom: aClass
 ]
@@ -168,7 +167,7 @@ PjDependencyAnalyzer >> initialize [
 	super initialize.
 	classesToConvert := IdentitySet new.
 	self resetNewClasses.
-	selectorsToConvert := Set withAll: self rootSelectors.
+	selectorsToConvert := IdentitySet withAll: self rootSelectors.
 	previousSelectorsDict := IdentityDictionary new.
 	methodsToConvertDict := IdentityDictionary new
 ]
@@ -198,12 +197,6 @@ PjDependencyAnalyzer >> resetNewSelectors [
 
 { #category : #initialization }
 PjDependencyAnalyzer >> rootSelectors [
-	^#( initialize start )
-]
 
-{ #category : #'analyzing methods' }
-PjDependencyAnalyzer >> shouldSkipMethod: aCompiledMethod [
-
-	^(aCompiledMethod hasPragmaNamed: (PjTranspiler skipMethodPragmaKeyword)) or:  
-	[currentClass methodsToSkip includes: aCompiledMethod]
+	^ #( initialize start )
 ]

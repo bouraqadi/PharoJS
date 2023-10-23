@@ -7,12 +7,23 @@ CompiledMethod >> isMethodSourcesProvider [
 ]
 
 { #category : #'*PharoJs-Base-Exporter' }
+CompiledMethod >> isPharoOnly [
+	^ self hasPragmaNamed: self skipMethodPragmaKeyword
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
+CompiledMethod class >> methodSourcesPragmaKey [
+	^#pjMethodSources
+]
+
+{ #category : #'*PharoJs-Base-Exporter' }
 CompiledMethod >> methodSourcesPragmaKey [
 
 	^ self class methodSourcesPragmaKey
 ]
 
 { #category : #'*PharoJs-Base-Exporter' }
-CompiledMethod class >> methodSourcesPragmaKey [
-	^#pjMethodSources
+CompiledMethod >> skipMethodPragmaKeyword [
+	"Methods with this pragma are skipped upon conversion to javascript."
+	^#pharoJsSkip
 ]

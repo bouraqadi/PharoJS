@@ -228,16 +228,23 @@ PjDependencyAnalyzerTest >> testFindReferencedClasses [
 { #category : #test }
 PjDependencyAnalyzerTest >> testFindReferencedMoreClasses [
 
-	| expectedClasses classes  |
-	classes := { PjAlternateClassForTranspilationTest. PjCore.
-			Object. PjClassEForPackageTranspilationTest }.
+	| expectedClasses classes |
+	classes := {
+		           PjAlternateClassForTranspilationTest.
+		           Object.
+		           PjClassEForPackageTranspilationTest }.
 	analyzer analyzeAllClasses: classes.
-	expectedClasses := (classes copyWithout: Object), {SharedPool.
-		                   PjObject. PjSharedPoolForTest.  PjSuperClassForTranspilationTest. PjClassEForPackageTranspilationTest. PjClassDForPackageTranspilationTest. PjClassBForPackageTranspilationTest. PjClassAForPackageTranspilationTest}.
+	expectedClasses := (classes copyWithout: Object) , {
+		                   SharedPool.
+		                   PjObject.
+		                   PjSharedPoolForTest.
+		                   PjSuperClassForTranspilationTest.
+		                   PjClassDForPackageTranspilationTest.
+		                   PjClassBForPackageTranspilationTest.
+		                   PjClassAForPackageTranspilationTest }.
 	self
 		assertCollection: analyzer classesToConvert
-		hasSameElements: expectedClasses.
-	
+		hasSameElements: expectedClasses
 ]
 
 { #category : #test }

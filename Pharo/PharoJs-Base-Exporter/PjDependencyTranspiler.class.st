@@ -1,9 +1,6 @@
 Class {
 	#name : #PjDependencyTranspiler,
 	#superclass : #PjTranspiler,
-	#instVars : [
-		'analyzer'
-	],
 	#category : #'PharoJs-Base-Exporter-Kernel'
 }
 
@@ -28,12 +25,6 @@ PjDependencyTranspiler >> convertAllClasses: classes [
 PjDependencyTranspiler >> convertClass: aClass [
 
 ^self convertAllClasses: { aClass }
-]
-
-{ #category : #initialization }
-PjDependencyTranspiler >> initialize [ 
-	super initialize.
-	analyzer := self analyzerClass new
 ]
 
 { #category : #'transpiling methods' }

@@ -216,7 +216,7 @@ PjExporter >> initializeWithAppClass: aClass [
 
 	appClass := aClass.
 	transpiler := self newTranspiler: self transpilerClass.
-	self transpiler beforeCodeOutputHook: [ :pools |
+	self transpiler beforeCodeOutputHook: [ :pools | 
 		self writeGlobalsPolyfills: pools ].
 	self addAllClasses: appClass appClasses.
 	self addAllPackages: appClass appPackages

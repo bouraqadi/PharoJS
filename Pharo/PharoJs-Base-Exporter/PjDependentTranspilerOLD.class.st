@@ -85,7 +85,7 @@ PjDependentTranspilerOLD >> convertClass: aClass [
 
 { #category : #transpiling }
 PjDependentTranspilerOLD >> convertMethodAst: aMethod [
-	(self shouldSkipMethodNode: aMethod) ifTrue: [ ^self ].
+	(self shouldSkipMethod: aMethod) ifTrue: [ ^self ].
 	^convertedMethods at: aMethod ifAbsentPut: [
 		converter
 			classForConversion: aMethod methodClass classToUseForJsConversion;

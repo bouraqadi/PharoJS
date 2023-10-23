@@ -24,7 +24,8 @@ Class {
 		'pharoJsSelectorPrefix',
 		'instanceMethodsAliasesDict',
 		'classMethodsAliasesDict',
-		'globalPools'
+		'globalPools',
+		'analyzer'
 	],
 	#category : #'PharoJs-Base-Transpiler-Kernel'
 }
@@ -69,12 +70,6 @@ PjTranspiler class >> installJsClassPlaceholderSelector [
 { #category : #accessing }
 PjTranspiler class >> lineEnding [
 	^Character cr
-]
-
-{ #category : #accessing }
-PjTranspiler class >> skipMethodPragmaKeyword [
-	"Methods with this pragma are skipped upon conversion to javascript."
-	^#pharoJsSkip
 ]
 
 { #category : #'transpiling aliases' }
@@ -138,6 +133,11 @@ PjTranspiler >> aliasesDict: aliasesDict at: methodSelector addAll: newAliases [
 		           at: methodSelector
 		           ifAbsentPut: [ Set new ].
 	aliases addAll: newAliases
+]
+
+{ #category : #initialization }
+PjTranspiler >> analyzerClass [
+	^PjSkipCodeAnalyzer 
 ]
 
 { #category : #accessing }
@@ -330,8 +330,8 @@ PjTranspiler >> globalPools [
 
 { #category : #initialization }
 PjTranspiler >> initialize [
-
 	super initialize.
+	analyzer := self analyzerClass new.
 	generatedMethods := Dictionary new.
 	converter := self defaultConverterClass new.
 	converter transpiler: self.
@@ -526,8 +526,10 @@ PjTranspiler >> should: first occurBefore: last with: doesReferenceBlock [
 ]
 
 { #category : #'transpiling methods' }
-PjTranspiler >> shouldSkipMethodNode: aRBMethodNode [
-	^aRBMethodNode hasPragmaNamed: self skipMethodPragmaKeyword
+PjTranspiler >> shouldSkipMethod: aMethod [
+
+	^analyzer shouldSkipMethod: aMethod
+
 ]
 
 { #category : #accessing }
@@ -562,7 +564,7 @@ PjTranspiler >> transpileMethodToString: aMethod [
 { #category : #'transpiling methods' }
 PjTranspiler >> withMethodsNoSkipOf: aClass do: aBlock [
 	self withMethodsOf: aClass do: [ :method | 
-		(self shouldSkipMethodNode: method) ifFalse: [aBlock value: method] ]
+		(self shouldSkipMethod: method) ifFalse: [aBlock value: method] ]
 ]
 
 { #category : #'transpiling methods' }
@@ -601,6 +603,7 @@ aClass isJsClassPlaceholder ifTrue: [ ^self writeClassExtensionDeclarationOf: aC
 { #category : #'transpiling classes' }
 PjTranspiler >> writeClassDefinitionOf: aClass [
 
+	analyzer currentClass: aClass.
 	self resetMethodAliasesDictionaries.
 	self
 		writeNameForClass: PjCore;
@@ -613,7 +616,7 @@ PjTranspiler >> writeClassDefinitionOf: aClass [
 		writeMethodsOf: aClass;
 		writeClassVariableDeclarationsOf: aClass;
 		<< '},'.
-	aClass isJsClassPlaceholder ifTrue: [ 
+	aClass isJsClassPlaceholder ifTrue: [
 		self
 			writeNameForClass: aClass;
 			<< $, ].
