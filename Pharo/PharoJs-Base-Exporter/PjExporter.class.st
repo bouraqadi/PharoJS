@@ -354,7 +354,7 @@ PjExporter >> withBasicTranspilerDo: aBlock [
 		,
 			#( size isJSPrimitiveType doesNotUnderstand: value className
 			   new = == javascriptInitialize + / - * at: #at:put: connectDefaultToUrl:
-			   do: oidInstVarName).
+			   do: oidInstVarName startInstance ).
 	PjBridgeAppClassDecorator withAllSubclasses
 	, PjWebsocketDelegate withAllSubclasses , { PjProxyManager } do: [
 		:cl | transpiler analyzer addNewClass: cl ].

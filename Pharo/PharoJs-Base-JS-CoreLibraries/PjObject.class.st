@@ -52,13 +52,16 @@ PjObject class >> keysDo_jsGenerator: transpiler [
 { #category : #'pharoJs support' }
 PjObject class >> methodSources [
 
-<pjMethodSources>
+	<pjMethodSources>
 	<pharoJsSkip>
 	^ {
 		  Object.
 		  ProtoObject.
-		  Dictionary.
-		  Collection }
+		  	  (Collection
+		   -> #( addAll: #ifEmpty:ifNotEmpty: #ifNotEmpty:ifEmpty:
+			      ifEmpty: ifNotEmpty: )).
+		  (Dictionary -> #( do: )).
+		  (Dictionary class -> #( newFrom: newFromPairs: ) )}
 ]
 
 { #category : #'pharoJs support' }

@@ -55,30 +55,21 @@ PjDependencyAnalyzer >> addInstanceAndClassMethodsFrom: aClass [
 { #category : #'analyzing methods' }
 PjDependencyAnalyzer >> addMethodsToConvertFrom: aClass [
 
-	| previousSelectors missingSelectors |
+	| previousSelectors missingSelectors methodsToConvert |
 	previousSelectors := previousSelectorsDict
 		                     at: aClass
 		                     ifAbsentPut: [ Set new ].
 	missingSelectors := selectorsToConvert copyWithoutAll:
 		                    previousSelectors.
 	previousSelectors addAll: missingSelectors.
-	self addMethodsToConvertFrom: aClass selectors: missingSelectors 
-]
-
-{ #category : #'analyzing methods' }
-PjDependencyAnalyzer >> addMethodsToConvertFrom: aClass selectors: missingSelectors [
-
-	| methodSelectors methodsToConvert |
 	methodsToConvert := methodsToConvertDict
 		                    at: aClass
 		                    ifAbsentPut: [ IdentitySet new ].
 	aClass withMethodSourcesDo: [ :cl |
-		methodSelectors := missingSelectors intersection: cl selectors.
-		missingSelectors removeAll: methodSelectors.
 		self
 			addTo: methodsToConvert
 			methodsToConvertFrom: cl
-			selectors: methodSelectors ]
+			selectors: missingSelectors ]
 ]
 
 { #category : #'analyzing classes' }
@@ -112,21 +103,36 @@ PjDependencyAnalyzer >> addSelectorsToConvert: selectors [
 ]
 
 { #category : #'analyzing methods' }
-PjDependencyAnalyzer >> addTo: methodsToConvert methodToConvert: aCompiledMethod [
+PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass selectors: missingSelectors [
 
-	(self shouldSkipMethod: aCompiledMethod) ifTrue: [ ^ self ].
-	methodsToConvert add: aCompiledMethod.
-	aCompiledMethod literalsDo: [ :each | self addDependencyFrom: each]
-
+	| methods |
+	methods := missingSelectors collect: [ : aSymbol |
+		           aClass compiledMethodAt: aSymbol ] 
+			thenReject: [: aMethod | (self shouldSkipMethod: aMethod)].
+	methods do: [ :each |
+				methodsToConvert add: each.
+				missingSelectors remove: each selector.
+				each literalsDo: [ :each1 | self addDependencyFrom: each1 ].
+				each ast sentMessages do: [ :selector |
+					self addNewSelector: selector ].
+				 ]
 ]
 
 { #category : #'analyzing methods' }
-PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass selectors: selectors [
+PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass selectors: selectors skipBlock: skipBlock [
 
 	| methods |
 	methods := selectors collect: [ :each |
 		           aClass compiledMethodAt: each ].
-	methods do: [ : each | self addTo: methodsToConvert methodToConvert: each ]
+	methods do: [ :each |
+		(self shouldSkipMethod: each)
+			ifTrue: [ self ]
+			ifFalse: [
+				methodsToConvert add: each.
+				each literalsDo: [ :each1 | self addDependencyFrom: each1 ].
+				each ast sentMessages do: [ :selector |
+					self addNewSelector: selector ].
+				self ] ]
 ]
 
 { #category : #analyzing }

@@ -163,6 +163,24 @@ PjDependencyAnalyzerTest >> testFindMethodsMatchingReferencedSymbolsIn2Unrelated
 ]
 
 { #category : #test }
+PjDependencyAnalyzerTest >> testFindMethodsSentInBlocks [
+
+	| class expectedMethods |
+	class := factory newClass.
+	#( 'start
+		self handleBlock: [self m]' 'handleBlock: aBlock
+			^self' #m ) do: [ :methodSrc | class compile: methodSrc ].
+	expectedMethods := #( start handleBlock: m ) asSet collect: [
+		                   :selector | class >> selector ].
+	expectedMethods addAll: {
+			(ProtoObject >> #initialize). }.
+	analyzer analyzeClass: class.
+	self
+		assertCollection: self methodsToConvert
+		hasSameElements: expectedMethods
+]
+
+{ #category : #test }
 PjDependencyAnalyzerTest >> testFindMethodsSkippingSymbolsInLiteralArrays [
 
 	| class expectedMethods |
@@ -357,6 +375,42 @@ PjDependencyAnalyzerTest >> testMethodSourcesAreNotInherited [
 				(sourceClass >> #zork) }.
 	classes allButFirst do: [ :each |
 		self assert: (self methodsToConvertFor: each) isEmpty ]
+]
+
+{ #category : #test }
+PjDependencyAnalyzerTest >> testMethodsSkippedInOneSourceCopiedFromNextSource [
+
+	| fooBarSource zorkSource targetClass expectedMethods |
+	zorkSource := factory newClass.
+	#( 'foo
+	<pharoJsSkip>' bar zork ) do: [ :selector |
+		zorkSource compile: selector ].
+	zorkSource class compile: 'selectorsToSkip
+		^#(bar)
+	'.
+	fooBarSource := factory newClass.
+	#( foo bar zork ) do: [ :selector | fooBarSource compile: selector ].
+	targetClass := factory newClass.
+	targetClass class compile: ('methodSources
+		<{1}>
+		^\{{2}. {3}\}' format: {
+				 CompiledMethod methodSourcesPragmaKey.
+				 zorkSource name.
+				 fooBarSource name }).
+	targetClass compile: 'initialize
+		self zork. self foo. self bar'.
+	analyzer analyzeClass: targetClass.
+	self assertCollection: analyzer classesToConvert hasSameElements: {
+			PjObject.
+			targetClass }.
+	expectedMethods := {
+		                   (targetClass >> #initialize).
+		                   (fooBarSource >> #foo).
+		                   (fooBarSource >> #bar).
+		                   (zorkSource >> #zork) }.
+	self
+		assertCollection: (analyzer methodsToConvertFor: targetClass)
+		hasSameElements: expectedMethods
 ]
 
 { #category : #test }
