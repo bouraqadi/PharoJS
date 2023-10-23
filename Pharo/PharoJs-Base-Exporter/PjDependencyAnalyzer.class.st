@@ -107,6 +107,11 @@ PjDependencyAnalyzer >> addNewSelector: aSymbol [
 	selectorsToConvert add: aSymbol
 ]
 
+{ #category : #initialization }
+PjDependencyAnalyzer >> addSelectorsToConvert: selectors [
+	selectorsToConvert addAll: selectors
+]
+
 { #category : #'analyzing methods' }
 PjDependencyAnalyzer >> addTo: methodsToConvert methodToConvert: aCompiledMethod [
 
@@ -128,10 +133,8 @@ PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: aClass sel
 { #category : #analyzing }
 PjDependencyAnalyzer >> analyzeAllClasses: classes [
 
-	selectorsToConvert addAll: #( initialize start ).
 	classes do: [ :each | self addNewClassWithSuperclasses: each ].
-	[ newClasses isEmpty ] whileFalse: [ self findNewClasses ].
-
+	[ newClasses isEmpty ] whileFalse: [ self findNewClasses ]
 ]
 
 { #category : #analyzing }
@@ -165,7 +168,7 @@ PjDependencyAnalyzer >> initialize [
 	super initialize.
 	classesToConvert := IdentitySet new.
 	self resetNewClasses.
-	selectorsToConvert := Set new.
+	selectorsToConvert := Set withAll: self rootSelectors.
 	previousSelectorsDict := IdentityDictionary new.
 	methodsToConvertDict := IdentityDictionary new
 ]
@@ -191,6 +194,11 @@ PjDependencyAnalyzer >> resetNewClasses [
 PjDependencyAnalyzer >> resetNewSelectors [
 
 	newSelectors := Set new
+]
+
+{ #category : #initialization }
+PjDependencyAnalyzer >> rootSelectors [
+	^#( initialize start )
 ]
 
 { #category : #'analyzing methods' }

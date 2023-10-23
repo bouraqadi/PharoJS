@@ -10,6 +10,7 @@ Class {
 
 { #category : #'pharoJs support' }
 PjStack class >> jsTranspilationImportMethods [
+
 	<pharoJsSkip>
-	^{Stack -> #(top pop push:)}
+	^ { (Stack ) }
 ]

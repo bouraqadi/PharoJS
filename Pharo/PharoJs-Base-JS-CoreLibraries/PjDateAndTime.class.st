@@ -47,10 +47,8 @@ PjDateAndTime class >> javascriptName [
 PjDateAndTime class >> jsTranspilationImportMethods [
 
 	<pharoJsSkip>
-	^ { 
-		  (DateAndTime class
-		   -> #( #todayHour:minute: #tomorrowHour:minute: )).
-		  (DateAndTime -> #( daysInYear )) }
+	^ {
+		  (DateAndTime ) }
 ]
 
 { #category : #'instance creation' }

@@ -10,13 +10,10 @@ Trait {
 
 { #category : #'pharoJs support' }
 PjTMagnitude classSide >> jsTranspilationImportMethodsMagnitude [
+
+	<pjMethodSources>
 	<pharoJsSkip>
-	^ {Magnitude -> #(
-				min: max: min:max: between:and: 
-				compareWith:ifLesser:ifEqual:ifGreater: 
-				> <= >=
-			).
-		}
+	^ { (Magnitude) }
 ]
 
 { #category : #testing }

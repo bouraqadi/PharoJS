@@ -34,12 +34,13 @@ PjTArray classSide >> jsTranspilationImportMethods [
 { #category : #'pharoJs support' }
 PjTArray classSide >> jsTranspilationImportMethodsArray [
 
+	<pjMethodSources>
 	<pharoJsSkip>
 	^ self jsTranspilationImportMethodsCollection , {
 		  (Array
 		   -> #( isArray shouldBePrintedAsLiteral shouldBePrintedAsLiteral:
 			      printAsLiteralFormOn: isSelfEvaluating printAsSelfEvaluatingFormOn:
-			      isLiteral isSelfEvaluating:)).
+			      isLiteral isSelfEvaluating: )).
 		  (ByteArray -> #( asString )).
 		  (OrderedCollection -> #( join: addAllLast: )).
 		  (Collection

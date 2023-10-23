@@ -47,11 +47,11 @@ PjExporterTest >> testAvoidOverridingOnImportMethodsFromPharo [
 
 	exporter initializeWithAppClass: PjApplication.
 	exporter addClass: PjClassExtensionForTest.
+	exporter transpiler addSelectorsToConvert: #(foo).
 	jsCode := exporter javascriptCode.
 	self assertInstanceMethod: #foo equals: '(){return 42}'.
 	self
-		assert: (jsCode splitOn:
-				 self pharoJsSelectorPrefix , 'foo') size
+		assert: (jsCode splitOn: self pharoJsSelectorPrefix , 'foo') size
 		equals: 2
 ]
 
@@ -87,33 +87,42 @@ PjExporterTest >> testCoreClassedLoaded [
 
 { #category : #testing }
 PjExporterTest >> testExportingClassesAndPackages [
-	exporter addClass: Object.
-	self assert: exporter classes size equals: 1.
-	exporter addAllClasses: {String. Array}.
-	self assert: exporter classes size equals: 3.
-	exporter addPackage: 'PharoJs-Base-Exporter-Tests-Support'.
-	self assert: exporter classes size = 8.
-	exporter addAllPackages: {PjExporter category.  PjTranspiler category}.
-	self assert: exporter classes size > 10.
+
+	self assert: exporter classes size equals: 9.
+	self assert: (exporter classes includesAll: {
+				 Object.
+				 String.
+				 Array }).
+	exporter addPackage: 'PharoJs-Base-Exporter-Tests'.
+	self assert: exporter classes size equals: 15.
+	exporter addAllPackages: {
+			PjExporter category.
+			PjTranspiler category }.
+	self assert: exporter classes size > 40
 ]
 
 { #category : #testing }
 PjExporterTest >> testImportMethodsFromPharo [
+
 	exporter initializeWithAppClass: PjApplication.
 	exporter addClass: PjClassExtensionForTest.
+	exporter transpiler addSelectorsToConvert: #(yourself isArray isLiteral eqv: allInstances allInstancesDo: new).
 	jsCode := exporter javascriptCode.
-	#(yourself isArray isLiteral eqv:) do: [ : selector |
+	#( yourself isArray isLiteral eqv: ) do: [ :selector |
 		self assertHasInstanceMethod: selector ].
-	#(allInstances allInstancesDo: new) do: [ : selector |
+	#( allInstances allInstancesDo: new ) do: [ :selector |
 		self assertHasClassMethod: selector ].
 	self assertInstanceMethod: #yourself equals: '(){return this}'
 ]
 
 { #category : #testing }
 PjExporterTest >> testJsSelector [
-	| contents |
-	contents := (PjTestFileExporter exportApp: PjTestClassForPolyfill) contents.
-	self assert: (contents includesSubstring: 'alt_m(').
+
+	exporter := PjTestFileExporter new.
+	exporter initializeWithAppClass: PjTestClassForPolyfill.
+	exporter transpiler addSelectorsToConvert: #( m ).
+	exporter writeFiles.
+	self assert: (exporter contents includesSubstring: 'alt_m(')
 ]
 
 { #category : #testing }

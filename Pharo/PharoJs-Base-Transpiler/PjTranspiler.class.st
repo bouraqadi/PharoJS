@@ -98,6 +98,13 @@ PjTranspiler >> addAllConversions: aCollection [
 	converter addAllConversions: aCollection
 ]
 
+{ #category : #accessing }
+PjTranspiler >> addAllGlobalsPools: pools [
+	"used for loading polyfills"
+
+	globalPools addAll: pools
+]
+
 { #category : #conversions }
 PjTranspiler >> addAllOptionalConversions [
 	| aCollection |
@@ -252,8 +259,9 @@ PjTranspiler >> disableWriteDnuDuring: aBlockClosure [
 
 { #category : #loading }
 PjTranspiler >> discoveredGlobalsPool: aClass [
-	"To be used for loading polyfills"
-	^self
+	"used for loading polyfills"
+
+	globalPools add: aClass
 ]
 
 { #category : #loading }
@@ -313,6 +321,11 @@ PjTranspiler >> findClassesFor: aClass [
 { #category : #transpiling }
 PjTranspiler >> generateCodeStringFrom: jsAst [
 	generator asString: jsAst on: self jsStream
+]
+
+{ #category : #accessing }
+PjTranspiler >> globalPools [
+	^globalPools
 ]
 
 { #category : #initialization }

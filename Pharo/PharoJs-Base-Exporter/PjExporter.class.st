@@ -115,9 +115,11 @@ tag := package classTagNamed: tagName.
 { #category : #loading }
 PjExporter >> convertAllClassesToJs: someClasses [
 
+	"Used by bridge from playground. Needs tests"
+	self halt: #todo.
 	someClasses do: [ :aClass | self invalidateClass: aClass ].
 	self addAllClasses: someClasses.
-	^ self transpiler onTempStreamDo: [ 
+	^ self transpiler onTempStreamDo: [
 		  self transpiler
 			  convertAllClasses: self nonBootstrapClasses
 			  writeDnu: true ]
@@ -339,7 +341,8 @@ PjExporter >> withBasicTranspilerDo: aBlock [
 	basicTranspiler := self newTranspiler: self basicTranspilerClass.
 	transpiler := basicTranspiler.
 	aBlock value.
-	transpiler := currentTranspiler
+	transpiler := currentTranspiler.
+	transpiler addAllGlobalsPools:  basicTranspiler globalPools 
 ]
 
 { #category : #writing }

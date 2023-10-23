@@ -23,13 +23,14 @@ PjClassExtensionForTest class >> javascriptName [
 { #category : #importing }
 PjClassExtensionForTest class >> jsTranspilationImportMethods [
 
+	<pjMethodSources>
 	<pharoJsSkip>
-	^ { 
+	^ {
 		  (Object -> #( yourself isArray )).
-			(PjFooClassForTest -> #(foo)).
+		  (PjFooClassForTest -> #( foo )).
 		  (Boolean -> #( eqv: )).
 		  (UndefinedObject class -> #( allInstances allInstancesDo:
-		      new )) } asDictionary
+		      new )) }
 ]
 
 { #category : #any }

@@ -16,11 +16,8 @@ PjSortedCollection class >> jsSortUsing: aBlock [
 PjSortedCollection class >> jsTranspilationImportMethods [
 
 	<pharoJsSkip>
-	^ { 
-		  (SortedCollection -> (SortedCollection selectors copyWithoutAll:
-			    #( collect: #insert:before: indexForInserting:
-			       addAll: reSort #sort:to: groupedBy:))).
-		  (SortedCollection class -> #( sortBlock: sortUsing: )) }
+	^ {
+		  SortedCollection }
 ]
 
 { #category : #adding }

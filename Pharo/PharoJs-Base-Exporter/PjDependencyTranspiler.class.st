@@ -7,10 +7,20 @@ Class {
 	#category : #'PharoJs-Base-Exporter-Kernel'
 }
 
+{ #category : #initialization }
+PjDependencyTranspiler >> addSelectorsToConvert: selectors [
+	analyzer addSelectorsToConvert: selectors 
+]
+
+{ #category : #initialization }
+PjDependencyTranspiler >> analyzerClass [
+	^PjDependencyAnalyzer
+]
+
 { #category : #'transpiling classes' }
 PjDependencyTranspiler >> convertAllClasses: classes [
 
-	analyzer := PjDependencyAnalyzer analyzeAllClasses: classes.
+	analyzer analyzeAllClasses: classes.
 	super convertAllClasses: analyzer classesToConvert
 ]
 
@@ -18,6 +28,12 @@ PjDependencyTranspiler >> convertAllClasses: classes [
 PjDependencyTranspiler >> convertClass: aClass [
 
 ^self convertAllClasses: { aClass }
+]
+
+{ #category : #initialization }
+PjDependencyTranspiler >> initialize [ 
+	super initialize.
+	analyzer := self analyzerClass new
 ]
 
 { #category : #'transpiling methods' }

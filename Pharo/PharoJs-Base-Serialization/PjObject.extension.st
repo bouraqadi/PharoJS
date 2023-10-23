@@ -14,12 +14,3 @@ PjObject class >> instantiateWithPhxJsonReader: reader instanceJsonObject: jsonO
 		keysAndValuesDo: [ :k :v | obj instVarNamed: k put: (reader readFromJsObjectOrDictionary: v) ].
 	^ obj
 ]
-
-{ #category : #'*PharoJs-Base-Serialization' }
-PjObject class >> jsTranspilationImportMethodsNonstandard [
-	<pharoJsSkip>
-	^ {(Object class -> #(newPhxJsonWriter)).
-	(Object
-		->
-			#(asPhxJsonString #writePhxJsonOn: writePhxJsonRepresentationOn: #writePhxJsonObjectOn:))}
-]
