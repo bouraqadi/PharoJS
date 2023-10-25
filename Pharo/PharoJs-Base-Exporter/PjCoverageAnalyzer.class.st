@@ -78,7 +78,7 @@ PjCoverageAnalyzer >> analyzeClass: aClass index: index [
 { #category : #analyzing }
 PjCoverageAnalyzer >> classDeclarationFailures [
 
-	^failures collect: #isClassDeclarationFailed
+	^ failures select: #isClassDeclarationFailed
 ]
 
 { #category : #accessing }
