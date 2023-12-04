@@ -99,11 +99,11 @@ PjObject >> add: assoc [
 	" this strange code is to install add: for objects that already have an add field or to do at:put: "
 
 	^ PjCore
-		installDnuArgs: {assoc}
-		selector: #add
-		js: #_add_
-		for: self
-		else: [ self js_at: assoc key put: assoc value ]
+		  installDnu: #add
+		  js: #_add_
+		  args: { assoc }
+		  receiver: self
+		  else: [ self js_at: assoc key put: assoc value ]
 ]
 
 { #category : #reflection }
@@ -381,11 +381,11 @@ PjObject >> value [
 	" this strange code is to install _value for objects that already have a value field or to return self "
 
 	^ PjCore
-		installDnuArgs: #()
-		selector: #value
-		js: PjCore pharoJsSelectorPrefix, 'value'
-		for: self
-		else: [ self ]
+		  installDnu: #value
+		  js: PjCore pharoJsSelectorPrefix , 'value'
+		  args: #(  )
+		  receiver: self
+		  else: [ self ]
 ]
 
 { #category : #'dictionary emulation' }

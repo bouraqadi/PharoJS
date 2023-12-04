@@ -37,14 +37,14 @@ PjCore class >> handleDNU: aMessage for: anObject [
 	| selector |
 	selector := (aMessage selector js_split: ':') js_at: 0.
 	^ self
-		installDnuArgs: aMessage arguments
-		selector: selector
-		js: (self makePharoJsSelector: aMessage selector)
-		for: anObject
-		else: [ self
-				error:
-					'Message not understood: ' , anObject className , '>>#'
-						, aMessage selector ]
+		  installDnu: selector
+		  js: (self makePharoJsSelector: aMessage selector)
+		  args: aMessage arguments
+		  receiver: anObject
+		  else: [
+			  self error:
+				  'Message not understood: ' , anObject className , '>>#'
+				  , aMessage selector ]
 ]
 
 { #category : #'reflection support' }
@@ -77,47 +77,38 @@ PjCore class >> initializeCore [
 ]
 
 { #category : #'doesNotUnderstand support' }
-PjCore class >> installDnuArgs: args selector: selector js: jsSelector for: anObject else: aBlock [
+PjCore class >> installAndPerform: selector js: jsSelector args: args receiver: anObject accessorType: type [
+
+	| func  |
+		0 = type
+			ifTrue: [ func := self makeGetter: selector ]
+			ifFalse: [ func := self makeSetter: selector ].
+		Object
+			js_defineProperty: (anObject js_at: '__proto__')
+			field: jsSelector
+			properties: (self propertySet: func).
+		^ func js_apply: anObject args: args.
+
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> installDnu: selector js: jsSelector args: args receiver: anObject else: aBlock [
 	" this could be a smalltalk object or a native JS object "
 
-	| type func functionName |
-	(type := anObject js_at: selector)
-		ifNil: [
-		(anObject js_hasOwnProperty: selector) ifTrue: [ type := 0 ] ]
-		ifNotNil: [
-			(self isFunction: type)
-				ifTrue: [
-					functionName := type js_at: #name.
-					'' = functionName
-						ifTrue: [ type := 2 ]
-						ifFalse: [
-							functionName asCharacter = functionName asCharacter capitalized
-								ifTrue: [ type := 0 " this is a constructor " ]
-								ifFalse: [ "We rely on the JS convention that constructors are capiltalized"
-									type := 2 ] ] ]
-				ifFalse: [ type := args js_at: #length ] ].
-	2 > type
-		ifTrue: [
-			0 = type
-				ifTrue: [ func := self makeGetter: selector ]
-				ifFalse: [ func := self makeSetter: selector ].
+	| type func owner |
+	type := self typeOfdnu: selector args: args receiver: anObject.
+	2 > type ifTrue: [^self installAndPerform: selector js: jsSelector args: args receiver: anObject accessorType: type ].
+	owner := anObject.
+	[ nil = owner ] whileFalse: [
+		((owner js_hasOwnProperty: selector) and: [
+			 'function' = (owner js_at: selector) typeof ]) ifTrue: [
+			func := owner js_at: selector.
 			Object
-				js_defineProperty: (anObject js_at: '__proto__')
+				js_defineProperty: owner
 				field: jsSelector
 				properties: (self propertySet: func).
-			^ func js_apply: anObject args: args ]
-		ifFalse: [
-			type := anObject.
-			[ nil = type ] whileFalse: [
-				((type js_hasOwnProperty: selector) and: [
-					 'function' = (type js_at: selector) typeof ]) ifTrue: [
-					func := type js_at: selector.
-					Object
-						js_defineProperty: type
-						field: jsSelector
-						properties: (self propertySet: func).
-					^ func js_apply: anObject args: args ].
-				type := type instVarNamed: '__proto__' ] ].
+			^ func js_apply: anObject args: args ].
+		owner := owner instVarNamed: '__proto__' ].
 	^ aBlock value
 ]
 
@@ -380,4 +371,20 @@ PjCore class >> throwFunction [
 { #category : #'throw support' }
 PjCore class >> throwFunctionName [
 	^ '$throw$'
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> typeOfdnu: selector args: args receiver: anObject [
+
+	| property functionName |
+	(property := anObject js_at: selector) ifNil: [
+		(anObject js_hasOwnProperty: selector) ifTrue: [ ^ 0 ]. self halt ].
+	(self isFunction: property) ifTrue: [
+		functionName := property js_at: #name.
+		functionName isEmpty ifTrue: [ ^ 2 ].
+		functionName asCharacter = functionName asCharacter capitalized
+			ifTrue: [ ^ 0 " this is a constructor " ]
+			ifFalse: [ "We rely on the JS convention that constructors are capiltalized"
+				^ 2 ] ].
+	^ args js_at: #length
 ]
