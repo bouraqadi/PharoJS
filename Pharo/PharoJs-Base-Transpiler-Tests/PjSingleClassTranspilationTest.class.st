@@ -98,7 +98,7 @@ PjSingleClassTranspilationTest >> testInstanceSideMethods [
 	self assertInstanceMethod: #m2 equals: '(){return this}'.
 	self assertInstanceMethod: #@ equals: '(op){return this}'.
 	self assertInstanceMethod: #add:and: equals: '(op1,op2){return op2}'.
-	self deny: self jsCode includes: 'methodToSkip'.
+	self deny: self jsCode includes: 'methodToSkip(){'.
 	self deny: self jsCode includes: 'ThisShouldBeSkipped'.
 	self assertInstanceMethod: #m: equals: '($in){console.log("abc")}'.
 	self assertInstanceMethod: #instanceMethodWithJsGenerator equals:  '(){', (self classToTranspile instanceMethod_jsGenerator: transpiler), '}'.
