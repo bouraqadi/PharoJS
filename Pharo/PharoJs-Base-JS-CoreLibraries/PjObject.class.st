@@ -98,11 +98,11 @@ PjObject >> add: assoc [
 	" this strange code is to install add: for objects that already have an add field or to do at:put: "
 
 	^ PjCore
-		installDnuArgs: {assoc}
-		selector: #add
-		js: #_add_
-		for: self
-		else: [ self js_at: assoc key put: assoc value ]
+		  installDnu: #add
+		  for: self
+		  args: { assoc }
+		  pjSelector: #_add_
+		  else: [ self js_at: assoc key put: assoc value ]
 ]
 
 { #category : #reflection }
@@ -193,6 +193,17 @@ PjObject >> halt [
 	<javascript: 'debugger'>
 ]
 
+{ #category : #testing }
+PjObject >> hasOrInheritsProperty: propertyName [
+	"The `in` operator cannot be used for some data types such as strings"
+
+	| property |
+	property := self js_at: propertyName.
+	property ifNotNil: [ ^ true ].
+	self isObjectOrFunction ifTrue: [^self jsHasOrInheritsProperty: propertyName ].
+	^ self hasOwnProperty: propertyName
+]
+
 { #category : #comparing }
 PjObject >> hash [
 	^ self identityHash
@@ -240,6 +251,18 @@ PjObject >> isEmptyOrNil [
 { #category : #testing }
 PjObject >> isJSPrimitiveType [
 	^ false
+]
+
+{ #category : #testing }
+PjObject >> isObjectOrFunction [
+	| type |
+	type := self typeof.
+	^type = 'object' or: [ type = 'function' ]
+]
+
+{ #category : #'dictionary emulation' }
+PjObject >> jsHasOrInheritsProperty: propertyName [
+	<javascript: 'return propertyName in this'>
 ]
 
 { #category : #'dictionary emulation' }
@@ -385,11 +408,11 @@ PjObject >> value [
 	" this strange code is to install _value for objects that already have a value field or to return self "
 
 	^ PjCore
-		installDnuArgs: #()
-		selector: #value
-		js: PjCore pharoJsSelectorPrefix, 'value'
-		for: self
-		else: [ self ]
+		  installDnu: #value
+		  for: self
+		  args: #(  )
+		  pjSelector: PjCore pharoJsSelectorPrefix , 'value'
+		  else: [ self ]
 ]
 
 { #category : #'dictionary emulation' }

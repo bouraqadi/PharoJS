@@ -5,9 +5,104 @@ Class {
 }
 
 { #category : #tests }
+PjInfrastructureTest >> testAccessorForClass [
+
+	| a jsObject |
+	jsObject :=  self evalBlock: [ Object].
+	a := self evalBlock: [ { (#x -> Object) } asJsObject ].
+	self assert: a x identicalTo: jsObject.
+	a x: 111.
+	self assert: a x equals: 111.
+
+]
+
+{ #category : #tests }
+PjInfrastructureTest >> testAccessorForInheritedPropertyWithNilNilValue [
+
+	| a b xValue otherXValue |
+	a := self evalBlock: [ Object new ].
+	b := self evalBlock: [ Object new ].
+	b instVarNamed: #__proto__ put: a.
+	3 timesRepeat: [ self should: [ b xXx ] raise: Error].
+	a instVarNamed: #xXx put: nil.
+	self assert: b xXx isNil.
+	xValue := 'wonderful!'.
+	b xXx: xValue.
+	self assert: b xXx equals: xValue.
+	self assert: a xXx isNil.
+	otherXValue := 'somehting else'.
+	a xXx: otherXValue.
+	self assert: b xXx equals: xValue.
+	self assert: a xXx equals: otherXValue
+]
+
+{ #category : #tests }
+PjInfrastructureTest >> testAccessorInstalledOnClass [
+
+	| a b |
+	b := self evalBlock: [ PjBSubClassOfA ].
+	a := self evalBlock: [ PjASuperClass ].
+	b instVarNamed: #y put: nil.
+	b y: 222.
+	self assert: b y equals: 222.
+	{
+		[ a y ].
+		[ a y: 444 ] } do: [ :aBlock | self should: aBlock raise: Error ]
+]
+
+{ #category : #tests }
+PjInfrastructureTest >> testAccessorInstalledOnObject [
+
+	| a b |
+	a := self evalBlock: [ { (#x -> nil) } asJsObject ].
+	self assert: a jsClassName equals: #Object.
+	a x: 111.
+	self assert: a x equals: 111.
+	b := self evalBlock: [ { (#y -> nil) } asJsObject ].
+	self assert: b jsClassName equals: #Object.
+	b y: 222.
+	self assert: b y equals: 222.
+	{
+		[ b x ].
+		[ b x: 333 ].
+		[ a y ].
+		[ a y: 444 ] } do: [ :aBlock | self should: aBlock raise: Error ]
+]
+
+{ #category : #tests }
+PjInfrastructureTest >> testAccessorInstalledOnPrototype [
+	"JS classes have a property named #prototype which references an object that acts as prototype for other instances. The prototype owns all instance methods."
+	| a b |
+	a := self evalBlock: [ PjASuperClass new ].
+	a instVarNamed: #x put: nil.
+	a x: 111.
+	self assert: a x equals: 111.
+	self should: [ a y ] raise: Error.
+	b := self evalBlock: [ PjASuperClass new ].
+	self assert: b x isNil.
+	b instVarNamed: #y put: nil.
+	b y: 222.
+	self assert: b y equals: 222.
+	self assert: a y isNil.
+
+]
+
+{ #category : #tests }
 PjInfrastructureTest >> testBridgePort [
 
 	self assert: self bridge port equals: self bridge server port
+]
+
+{ #category : #tests }
+PjInfrastructureTest >> testBugDnuInstallsSetterInsteadOfGetter [
+
+	self assertBlock: [
+			 | o |
+			 o := Object new.
+			 o at: 'someProp' put: nil.
+			 o someProp. "this should make a getter and not a setter"
+			 o at: 'someProp' put: 10.
+			 o someProp = 10 ]
 ]
 
 { #category : #tests }
@@ -15,6 +110,18 @@ PjInfrastructureTest >> testCallGetsTrampolined [
 
 	self assert: (self bridge evalBlock: [ 
 			 nil ~= (document getElementsByTagName: 'script') ])
+]
+
+{ #category : #tests }
+PjInfrastructureTest >> testDNUInstallsAGetterAndNotASetter [
+    self assert: (self bridge evalBlock: [
+             | obj |
+             obj := Object new.
+             obj instVarNamed: 'someProp' put: nil.
+             obj someProp. "this should install a getter, but a setter method gets installed instead, because the value of someProp is nil"
+             obj instVarNamed: 'someProp' put: 10.
+             console log: 'someProp =' with: obj someProp. "Observe in console log that 'obj someProp' returns nil, instead of 10"
+             obj someProp = 10 ])
 ]
 
 { #category : #tests }

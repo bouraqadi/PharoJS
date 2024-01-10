@@ -50,8 +50,12 @@ PjFunction >> assert [
 
 { #category : #'instance creation' }
 PjFunction >> basicNew [
-" here so that ordinary Javascript 'classes' will respond to the message"
-	<javascript: 'return new this()'>
+	"The initialize message is skipped since we do provide an argument to the constructor."
+
+	" See `PjTranspiler>>#writeInitializeSupportFor: aClass`"
+
+	<javascript: 'return new this(null)'>
+	
 ]
 
 { #category : #'instance creation' }
@@ -143,9 +147,12 @@ PjFunction >> ifCurtailed: curtailBlock [
 
 { #category : #'instance creation' }
 PjFunction >> new [
-	^self basicNew 
-		initialize;
-		yourself
+	"The initialize message is sent to the newly created instance since no argument is provided to the constructor."
+
+	" See `PjTranspiler>>#writeInitializeSupportFor: aClass`"
+
+	<javascript: 'return new this()'>
+	^ self basicNew initialize
 ]
 
 { #category : #'instance creation' }

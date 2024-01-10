@@ -21,9 +21,10 @@ PjSharedPoolDefinitionTranspilationTest >> expectedFullClassDefinition [
 	superclassName := self classToTranspile superclass
 		                  nameToUseForJsConversion.
 	^ 'Smalltalk.installClass(class {1} extends {2}\{
+constructor()\{super(null);if(arguments.length == 0)\{this._initialize();\}\}
 static _initialize()\{{1}.cp$.A="sharedA";{1}.cp$.B="sharedB";{1}.cp$.C="sharedC";return this\}
 static cp$=\{"C":null,"X":null,"A":null,"B":null\}\},\{\},\{\});{1}._initialize();
-' format: { 
+' format: {
 			  className.
 			  superclassName }
 ]

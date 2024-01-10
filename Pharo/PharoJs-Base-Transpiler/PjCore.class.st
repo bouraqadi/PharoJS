@@ -22,6 +22,20 @@ Class {
 	#category : #'PharoJs-Base-Transpiler-Globals'
 }
 
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> accessorTargetFor: anObject [
+	"JS objects created with the brace notation are instances of Object.
+	It does not make sense to add to Object getter/setters on properties of such objects."
+
+	"Classes are functions. Their properties are equivalent to Smalltalk's class side IVs. So, they belong to the class itself"
+
+	| prototype |
+	(self isClass: anObject) ifTrue: [ ^ anObject ].
+	prototype := anObject js_at: #__proto__.
+	prototype == Object prototype ifTrue: [ ^ anObject ].
+	^ prototype
+]
+
 { #category : #initalize }
 PjCore class >> emptyJavascriptObject [
 	"Object.create(null) creates an even emptier JS object, but it isn't an Object (i.e. has no methods)."
@@ -37,14 +51,27 @@ PjCore class >> handleDNU: aMessage for: anObject [
 	| selector |
 	selector := (aMessage selector js_split: ':') js_at: 0.
 	^ self
-		installDnuArgs: aMessage arguments
-		selector: selector
-		js: (self makePharoJsSelector: aMessage selector)
-		for: anObject
-		else: [ self
-				error:
-					'Message not understood: ' , anObject className , '>>#'
-						, aMessage selector ]
+		  installDnu: selector
+		  for: anObject
+		  args: aMessage arguments
+		  pjSelector: (self makePharoJsSelector: aMessage selector)
+		  else: [
+			  self error:
+				  'Message not understood: ' , anObject className , '>>#'
+				  , aMessage selector ]
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> hasCapitalizedName: anObject [
+	"Name being a property we need to access it directly. 
+	We cannot rely on accessor generation through since this method is this exact purpose.
+	Otherwise we enter an infinite loop."
+
+	| jsName firstCharacter |
+	jsName := anObject js_at: #name.
+	jsName = '' ifTrue: [ ^false ].
+	firstCharacter := jsName first.
+	^ firstCharacter = firstCharacter capitalized
 ]
 
 { #category : #'reflection support' }
@@ -77,46 +104,79 @@ PjCore class >> initializeCore [
 ]
 
 { #category : #'doesNotUnderstand support' }
-PjCore class >> installDnuArgs: args selector: selector js: jsSelector for: anObject else: aBlock [
-	" this could be a smalltalk object or a native JS object "
-	| type func functionName |
-	(type := anObject js_at: selector) ifNotNil: [
-		(self isFunction: type) ifTrue: [
-			functionName := type js_at: #name.
-			'' = functionName ifTrue: [
-				type := 2
-			] ifFalse: [
-				functionName asCharacter = functionName asCharacter capitalized "We rely on the JS convention that constructors are capiltalized"
-					ifTrue: [type := 0 " this is a constructor "]
-					ifFalse: [ type := 2 ]
-			]
-		] ifFalse: [
-			type := args js_at: #length
-	]].
-	2 > type ifTrue: [
-		0 = type ifTrue: [
-			func := self makeGetter: selector
-		] ifFalse: [
-			func := self makeSetter: selector.
-		].
-		(Object js_defineProperty: (anObject js_at:'__proto__')
-				field: jsSelector
-				properties: (self propertySet: func)).
-		^ func js_apply: anObject args: args 
-	] ifFalse: [
-		type := anObject.
-		[ nil = type ] whileFalse: [
-			((type js_hasOwnProperty: selector) and: [
-				'function'  = (type js_at: selector) typeof ]) ifTrue: [
-				func := type js_at: selector.
-				(Object js_defineProperty: type
-						field: jsSelector
-						properties: (self propertySet: func)).
-				^ func js_apply: anObject args: args 
-			].
-			type := type instVarNamed:'__proto__'
-	]].
-	^ aBlock value
+PjCore class >> install: aFunction named: pjSelector in: target [
+
+	(Object js_isFrozen: target) ifFalse: [
+		Object
+			js_defineProperty: target
+			field: pjSelector
+			properties: (self propertySet: aFunction) ]
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> installAndPerform: selector alias: pjSelector for: anObject args: args function: aFunction [
+
+	| target |
+	target := anObject.
+	[ target js_hasOwnProperty: selector ] whileFalse: [
+		target := target js_at: '__proto__' ].
+	self install: aFunction named: pjSelector in: target.
+	^ aFunction js_apply: anObject args: args
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> installAndPerformAccessor: pjSelector property: peropertyName for: anObject args: args [
+
+	| accessor target |
+	"By default, add accessors to the prototype of the constructor.
+	But, JS objects created with the brace notation are instances of Object.
+	But, it does not make sense to add to Object getter/setters on properties of such objects."
+	args size = 0
+		ifTrue: [ accessor := self makeGetter: peropertyName ]
+		ifFalse: [ accessor := self makeSetter: peropertyName ].
+	target := self accessorTargetFor: anObject.
+	self install: accessor named: pjSelector in: target.
+	^ accessor js_apply: anObject args: args
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> installDnu: selector for: anObject args: args pjSelector: pjSelector else: aBlock [
+	"anObject could be a smalltalk object or a native JS object for a JS library"
+
+	"pjSelector is the result of transpiling a Smalltalk selector to be JS compatible see PjCore class >> #makePharoJsSelector: "
+
+	"If a property named selector is missing 
+		Then value the else block which typically signals message not understood. 
+	Else
+		If property is a function (js function without the PharoJS pj_ prefix) 
+			Then Install an alias with pj_ prefix and perform the function/method. 
+		Else  
+			Install and perform a getter or a setter based on the number or args 
+	"
+
+	| property |
+	(anObject hasOrInheritsProperty: selector) ifFalse: [ ^ aBlock value ].
+	property := anObject instVarNamed: selector.
+	(self isBasicFunction: property) ifTrue: [
+		^ self
+			  installAndPerform: selector
+			alias: pjSelector
+			  for: anObject
+			  args: args
+			  function: property ].
+	args size > 1 ifTrue: [ ^ aBlock value ].
+	^ self
+		  installAndPerformAccessor: pjSelector
+		  property: selector
+		  for: anObject
+		  args: args
+]
+
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> isBasicFunction: anObject [
+
+	(self isClassOrBasicFunction: anObject) ifFalse: [ ^ false ].
+	^ (self hasCapitalizedName: anObject) not
 ]
 
 { #category : #'nil support' }
@@ -124,14 +184,24 @@ PjCore class >> isBrowserPlatform [
 	^ (self at: #navigator) isNotNil
 ]
 
-{ #category : #'nil support' }
-PjCore class >> isDomPlatform [
-	^ (self at: #document) isNotNil
+{ #category : #'doesNotUnderstand support' }
+PjCore class >> isClass: anObject [
+
+	(self isClassOrBasicFunction: anObject) ifFalse: [ ^false ].
+	^self hasCapitalizedName: anObject
+
 ]
 
 { #category : #'doesNotUnderstand support' }
-PjCore class >> isFunction: type [
-	<javascript: 'return "function" == typeof type'>
+PjCore class >> isClassOrBasicFunction: anObject [
+
+	<javascript: 'return "function" == typeof anObject'>
+	
+]
+
+{ #category : #'nil support' }
+PjCore class >> isDomPlatform [
+	^ (self at: #document) isNotNil
 ]
 
 { #category : #'nil support' }

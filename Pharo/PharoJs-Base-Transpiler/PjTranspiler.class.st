@@ -760,6 +760,28 @@ PjTranspiler >> writeInheritedClassInstanceVariablesFixFor: aClass [
 				<< '=null;' ] ]
 ]
 
+{ #category : #'transpiling classes' }
+PjTranspiler >> writeInitializeSupportFor: aClass [
+	"The constructor ensures the initialize message is sent even if the new operator is used to instantiate PharoJS classes."
+
+	"Since we cannot add this message to the constructor of Object, we have to replicate it in every class we generate since we are unsure about the superclass. However, this replication can lead to repeated initialize message sent by the class of the new object and all its PharoJS generated superclasses."
+
+	"To avoid repeating the initialize message, we use a trick. The absence or presence of arguments is used as a flag. If an argument is present we skip the initialize message. This is why the generated constructor calls the constructor of the superclass with the argument null."
+
+	"An alternative implementation with a boolean constructor argument is possible in theory. The argument would represent a flag which value would make skip or perform the initialize. But, solution  breaks the tests."
+
+	aClass isJsClassPlaceholder ifTrue: [ ^ self ].
+	self << 'constructor(){'.
+	aClass superclass classToUseForJsConversion isJsClassPlaceholder
+		ifTrue: [ self << 'super();' ]
+		ifFalse: [ self << 'super(null);' ].
+	self
+		<< 'if(arguments.length == 0){this.';
+		writeJsSelector: #initialize;
+		<< '();}}';
+		cr
+]
+
 { #category : #'transpiling aliases' }
 PjTranspiler >> writeInstallMethodAliasesOf: aClass [
 
