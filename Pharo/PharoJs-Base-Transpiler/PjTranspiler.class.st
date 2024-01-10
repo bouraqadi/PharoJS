@@ -618,6 +618,7 @@ PjTranspiler >> writeClassDefinitionOf: aClass [
 		writeClassDeclarationOf: aClass;
 		<< ${;
 		cr;
+		writeInitializeSupportFor: aClass;
 		writeMethodsOf: aClass;
 		writeClassVariableDeclarationsOf: aClass;
 		<< '},'.
