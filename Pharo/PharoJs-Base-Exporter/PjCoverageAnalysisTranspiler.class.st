@@ -21,7 +21,9 @@ PjCoverageAnalysisTranspiler >> convertClass: aClass [
 { #category : #'transpiling methods' }
 PjCoverageAnalysisTranspiler >> shouldSkipMethod: aMethod [
 
-	| shouldSkip |	shouldSkip := super shouldSkipMethod: aMethod.
+	| shouldSkip |
+	self halt: 'TODO: Use analyzer to collect skipped methods'.
+	shouldSkip := super shouldSkipMethod: aMethod.
 	shouldSkip ifTrue: [ result addSkippedMethod: aMethod ].
 	^ shouldSkip
 ]

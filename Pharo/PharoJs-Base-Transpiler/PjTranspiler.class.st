@@ -530,13 +530,6 @@ PjTranspiler >> should: first occurBefore: last with: doesReferenceBlock [
 	^ doesReferenceBlock value: first value: last
 ]
 
-{ #category : #'transpiling methods' }
-PjTranspiler >> shouldSkipMethod: aMethod [
-
-	^analyzer shouldSkipMethod: aMethod
-
-]
-
 { #category : #accessing }
 PjTranspiler >> shouldWriteDnu [
 	^ shouldWriteDnu
@@ -567,15 +560,9 @@ PjTranspiler >> transpileMethodToString: aMethod [
 ]
 
 { #category : #'transpiling methods' }
-PjTranspiler >> withMethodsNoSkipOf: aClass do: aBlock [
-	self withMethodsOf: aClass do: [ :method | 
-		(self shouldSkipMethod: method) ifFalse: [aBlock value: method] ]
-]
-
-{ #category : #'transpiling methods' }
 PjTranspiler >> withMethodsOf: aClass do: aBlock [
-	aClass selectorsWithExplicitOrigin do: [ : selector |
-		 aBlock value: (aClass compiledMethodAt: selector) ]
+
+	(analyzer methodsToConvertFor: aClass) do:  aBlock
 ]
 
 { #category : #'transpiling aliases' }
@@ -676,11 +663,11 @@ PjTranspiler >> writeClassMethodsAliasesDict [
 { #category : #'transpiling methods' }
 PjTranspiler >> writeClassMethodsOf: aClass [
 
-	self withMethodsNoSkipOf: aClass class do: [ :aRBMethodNode | 
+	self withMethodsOf: aClass class do: [ :aRBMethodNode |
 		self
 			<< 'static ';
 			transpileMethod: aRBMethodNode;
-			addAliasesForClassMethod:aRBMethodNode ;
+			addAliasesForClassMethod: aRBMethodNode;
 			cr ]
 ]
 
@@ -812,7 +799,7 @@ PjTranspiler >> writeInstanceMethodsAliasesDict [
 { #category : #'transpiling methods' }
 PjTranspiler >> writeInstanceMethodsOf: aClass [
 
-	self withMethodsNoSkipOf: aClass do: [ :aRBMethodNode | 
+	self withMethodsOf: aClass do: [ :aRBMethodNode |
 		self
 			transpileMethod: aRBMethodNode;
 			addAliasesForInstanceMethod: aRBMethodNode;

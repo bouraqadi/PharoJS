@@ -126,8 +126,12 @@ PjDependencyAnalyzer >> addTo: methods methodToConvertAt: candidateSelector from
 { #category : #'analyzing methods' }
 PjDependencyAnalyzer >> addTo: methodsToConvert methodsToConvertFrom: methodSource removeSelectorFrom: missingSelectors [
 
-missingSelectors copy do:   [: selector | 
-	self addTo: methodsToConvert  methodToConvertAt: selector from: methodSource missingSelectors: missingSelectors  ]
+	missingSelectors copy do: [ :selector |
+		self
+			addTo: methodsToConvert
+			methodToConvertAt: selector
+			from: methodSource
+			missingSelectors: missingSelectors ]
 ]
 
 { #category : #analyzing }

@@ -37,9 +37,3 @@ PjDependencyTranspiler >> convertClass: aClass [
 
 ^self convertAllClasses: { aClass }
 ]
-
-{ #category : #'transpiling methods' }
-PjDependencyTranspiler >> withMethodsOf: aClass do: aBlock [
-
-	(analyzer methodsToConvertFor: aClass) do: aBlock
-]
