@@ -79,7 +79,7 @@ PjNumber class >> jsTranspilationImportMethods [
 		                      asNumber squared even odd fractionPart
 		                      integerPart // strictlyPositive
 		                      positive negative raisedToInteger:
-		                      raisedTo: isNumber isZero quo: rem: #adaptToPoint:andSend:).
+		                      raisedTo: isNumber isZero quo: rem: #adaptToPoint:andSend: ).
 	^ self jsTranspilationImportMethodsMagnitude , {
 		  (Number -> numberSelectors).
 		  (Number class -> #( one )).
@@ -93,7 +93,8 @@ PjNumber class >> jsTranspilationImportMethods [
 			   #( denormalized e emax emin epsilon fmax fmin fminDenormalized
 			      fminNormalized halfPi infinity maxExactInteger
 			      nan negativeInfinity negativeZero one pi precision radix
-			      threePi twoPi zero )) }
+			      threePi twoPi zero )).
+			(Integer -> #(benchmark tinyBenchmarks benchFib))  }
 ]
 
 { #category : #arithmetics }
@@ -349,6 +350,15 @@ PjNumber >> lowBit [
 { #category : #converting }
 PjNumber >> mm [
 	<javascript: 'return this + "mm"'>
+]
+
+{ #category : #printing }
+PjNumber >> myTinyBench [
+	| result |
+	console time: 'TinyBenchmarks'.
+	result := self tinyBenchmarks.
+	console timeEnd: 'TinyBenchmarks'.
+	^result
 ]
 
 { #category : #converting }

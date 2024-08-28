@@ -39,7 +39,7 @@ PjTArray classSide >> jsTranspilationImportMethodsArray [
 		  (Array
 		   -> #( isArray shouldBePrintedAsLiteral shouldBePrintedAsLiteral:
 			      printAsLiteralFormOn: isSelfEvaluating printAsSelfEvaluatingFormOn:
-			      isLiteral isSelfEvaluating:)).
+			      isLiteral isSelfEvaluating:  )).
 		  (ByteArray -> #( asString )).
 		  (OrderedCollection -> #( join: addAllLast: )).
 		  (Collection
@@ -50,7 +50,7 @@ PjTArray classSide >> jsTranspilationImportMethodsArray [
 			   #( withIndexDo: allButFirst allButFirst: allButLast allButLast:
 			      #copyFrom:to: #copyReplaceFrom:to:with:
 			      copyWith: copyWithFirst: copyWithoutIndex: #from:to:put:
-			      grownBy: #replaceFrom:to:with: reverseDo: appendTo: putOn: )).
+			      grownBy: #replaceFrom:to:with: reverseDo: appendTo: putOn: atAllPut:)).
 		  (ArrayedCollection class
 		   -> #( with: #with:with: #with:with:with: #with:with:with:with: )) }
 ]

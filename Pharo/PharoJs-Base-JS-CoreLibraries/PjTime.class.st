@@ -32,25 +32,39 @@ PjTime class >> javascriptName [
 
 { #category : #'pharoJs support' }
 PjTime class >> jsTranspilationImportMethods [
+
 	<pharoJsSkip>
 	| classSelectors instanceSelectors |
-	classSelectors := Time class 
-		selectorsInProtocols: #('instance creation' '*PharoExtra-instance creation' '*Kernel-Chronology-Extras')  
-		exclude: #(now nowLocal fromString: readFrom: seconds:nanoSeconds: seconds:  hour:minute:second:milliSecond: hour:minute:second:nanoSecond:
-		benchmarkMillisecondClock benchmarkPrimitiveResponseDelay dateAndTimeFromSeconds:
-		). 
-	instanceSelectors := Time 
-		selectorsInProtocols: #(accessing "adding comparing converting")
-		exclude: #(hour12 hour24 minute second).
-	^{Time class -> classSelectors.
-	Time -> instanceSelectors }
+	classSelectors := Time class
+		                  selectorsInProtocols:
+			                  #( 'instance creation' '*PharoExtra-instance creation'
+			                     '*Kernel-Chronology-Extras' )
+		                  exclude:
+			                  #( now nowLocal fromString: readFrom: #seconds:nanoSeconds:
+			                     seconds: #hour:minute:second:milliSecond:
+			                     #hour:minute:second:nanoSecond:
+			                     benchmarkMillisecondClock
+			                     benchmarkPrimitiveResponseDelay
+			                     dateAndTimeFromSeconds: ).
+	instanceSelectors := Time
+		                     selectorsInProtocols: #( accessing )
+		                     exclude: #( hour12 hour24 minute second ).
+	^ {
+		  (Time class -> (classSelectors, #(microsecondsToRun:))).
+		  (Time -> instanceSelectors) }
+]
+
+{ #category : #clock }
+PjTime class >> microsecondClockValue [
+
+	^ self millisecondClockValue * 1000
 ]
 
 { #category : #clock }
 PjTime class >> millisecondClockValue [
-	<javascript: 'if(typeof performance=="object") return performance.now();
-if(typeof process=="object"){var hr=process.hrtime();return hr[0]*1000+hr[1]/1000000}
-return Date.now()'>
+
+	<javascript: 'return window.performance.now();'>
+	
 ]
 
 { #category : #'instance creation' }
