@@ -43,9 +43,9 @@ jobs:
 
       - name: run tests headless
         # https://github.com/marketplace/actions/setup-xvfb
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        # uses: coactions/setup-xvfb@v1
+        # with:
+        run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
 
 
 
