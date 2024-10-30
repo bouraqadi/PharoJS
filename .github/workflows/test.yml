@@ -32,8 +32,7 @@ jobs:
 
       # https://github.com/marketplace/actions/setup-chrome
       - uses: browser-actions/setup-chrome@v1
-      - run: chromium --version
-
+    
       # https://github.com/marketplace/actions/setup-node-js-environment
       - uses: actions/setup-node@v4
         with:
@@ -41,15 +40,9 @@ jobs:
           # cache: 'npm'
           # cache-dependency-path: '**/package-lock.json'
 
-      - name: run tests headless
-        # https://github.com/marketplace/actions/setup-xvfb
-        # uses: coactions/setup-xvfb@v1
-        # with:
-        env: # Required by GitHub
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: 
-          smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-
+      - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        shell: bash
+        timeout-minutes: 15
 
 
         
