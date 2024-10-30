@@ -23,7 +23,8 @@ jobs:
     steps:
       # https://github.com/marketplace/actions/checkout
       - uses: actions/checkout@v4
-
+        with: # Iceberg requires the full commit history https://github.com/marketplace/actions/setup-smalltalkci
+          fetch-depth: 0 
       # https://github.com/marketplace/actions/setup-smalltalkci
       - uses: hpi-swa/setup-smalltalkCI@v1
         id: smalltalkci
