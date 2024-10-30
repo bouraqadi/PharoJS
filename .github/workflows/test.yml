@@ -37,15 +37,19 @@ jobs:
       # https://github.com/marketplace/actions/setup-node-js-environment
       - uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
+          node-version: '20' # We don't use node-version 'latest' because V20 is required by setup-xvfb@v1 to run tests headless
           # cache: 'npm'
           # cache-dependency-path: '**/package-lock.json'
 
-      - run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+      # Run tests headless
+      # https://github.com/marketplace/actions/setup-xvfb
+      - uses: coactions/setup-xvfb@v1
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        timeout-minutes: 15
+        with:
+          run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+          shell: bash
+          timeout-minutes: 15
 
 
         
