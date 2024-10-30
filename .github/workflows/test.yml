@@ -45,7 +45,10 @@ jobs:
         # https://github.com/marketplace/actions/setup-xvfb
         # uses: coactions/setup-xvfb@v1
         # with:
-        run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        env: # Required by GitHub
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: 
+          smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
 
 
 
