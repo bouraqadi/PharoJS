@@ -6,6 +6,26 @@ Class {
 	#tag : 'Analyzer'
 }
 
+{ #category : 'utility' }
+OLDTaAnalyzer class >> inspectAnalysis [
+
+	<example>
+	self newAnalysis inspect
+]
+
+{ #category : 'utility' }
+OLDTaAnalyzer class >> newAnalysis [
+
+	^self new newAnalysis
+]
+
+{ #category : 'utility' }
+OLDTaAnalyzer class >> printMetricsOnTranscript [
+
+	<example>
+	^self newAnalysis printMetricsOnTranscript; yourself
+]
+
 { #category : 'OLD' }
 OLDTaAnalyzer >> allCompilerMethodsSendingPragmasDict [
 

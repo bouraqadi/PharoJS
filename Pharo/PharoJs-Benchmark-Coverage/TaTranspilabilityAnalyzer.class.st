@@ -6,26 +6,6 @@ Class {
 	#tag : 'Analyzer'
 }
 
-{ #category : 'utility' }
-TaTranspilabilityAnalyzer class >> inspectAnalysis [
-
-	<example>
-	self newAnalysis inspect
-]
-
-{ #category : 'utility' }
-TaTranspilabilityAnalyzer class >> newAnalysis [
-
-	^self new newAnalysis
-]
-
-{ #category : 'utility' }
-TaTranspilabilityAnalyzer class >> printMetricsOnTranscript [
-
-	<example>
-	^self newAnalysis printMetricsOnTranscript; yourself
-]
-
 { #category : 'accessing' }
 TaTranspilabilityAnalyzer >> allPragmaSelectors [
 
@@ -41,7 +21,10 @@ TaTranspilabilityAnalyzer >> allPragmas [
 { #category : 'analyzing' }
 TaTranspilabilityAnalyzer >> candidatePragmaSelectors [
 
-	^ self allPragmaSelectors reject: [ :selector |
+	| falsePositivePragmaSelectors canadiates |
+	falsePositivePragmaSelectors := #(spec spec: origin pragma: debuggerCompleteToSender).
+	canadiates := self allPragmaSelectors copyWithoutAll: falsePositivePragmaSelectors.
+	^canadiates reject: [ :selector |
 		  selector beginsWith: #deprecated ]
 ]
 
@@ -90,21 +73,6 @@ TaTranspilabilityAnalyzer >> compilerPluginMethods [
 
 	^ self compilerPluginClasses flatCollect: [ : class | 
 		class methods ].
-]
-
-{ #category : 'analyzing' }
-TaTranspilabilityAnalyzer >> dictionaryWithSelectorsOfPragmasAffectingCompilation [
-
-	| methods selectors dictionary methodSet |
-	methods := self compilerMethodsSendingPragmaSelectors.
-	selectors := self selectorsOfPragmasAffectingCompilation.
-	dictionary := Dictionary new.
-	methods do: [ : aMethod | 
-		selectors do: [ : aSelector | 
-					methodSet := dictionary at: aSelector ifAbsentPut: [ Set new ].
-					(self isMethod: aMethod senderOf: aSelector) ifTrue: [ methodSet add: aMethod ]
-			] ].
-	^dictionary
 ]
 
 { #category : 'analyzing' }
