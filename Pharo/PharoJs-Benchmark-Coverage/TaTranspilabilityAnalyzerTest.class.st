@@ -31,11 +31,12 @@ TaTranspilabilityAnalyzerTest >> testAllPragmas [
 { #category : 'running' }
 TaTranspilabilityAnalyzerTest >> testPragmasAffectingCompilation [
 
-	| pragmas pragmassCount |
+	| pragmas pragmassCount | 
 	pragmas := analyzer pragmasAffectingCompilation.
 	pragmassCount := pragmas size.
 	self assert: pragmassCount < 1000.
-	self assert: pragmassCount > analyzer selectorsOfPragmasAffectingCompilation size
+	self assert:
+		pragmassCount > analyzer selectorsOfPragmasAffectingCompilation size
 ]
 
 { #category : 'running' }

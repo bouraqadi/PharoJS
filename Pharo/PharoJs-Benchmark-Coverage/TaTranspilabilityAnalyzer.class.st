@@ -26,24 +26,6 @@ TaTranspilabilityAnalyzer class >> printMetricsOnTranscript [
 	^self newAnalysis printMetricsOnTranscript; yourself
 ]
 
-{ #category : 'OLD' }
-TaTranspilabilityAnalyzer >> allCompilerMethodsSendingPragmasDict [
-
-	| candidatePragmaSelectors associations |
-	candidatePragmaSelectors := self candidatePragmaSelectors.
-	associations := self compilerMethodsSendingPragmaSelectors collect: [ :meth |
-		                meth ->  (self
-			                 allSelectorsIn: candidatePragmaSelectors
-			                 sentBy: meth) ].
-	^ associations asDictionary
-]
-
-{ #category : 'OLD' }
-TaTranspilabilityAnalyzer >> allMethods [
-
-	^ SystemNavigation default allMethods
-]
-
 { #category : 'accessing' }
 TaTranspilabilityAnalyzer >> allPragmaSelectors [
 
@@ -56,12 +38,6 @@ TaTranspilabilityAnalyzer >> allPragmas [
 	^ Pragma all asSet
 ]
 
-{ #category : 'OLD' }
-TaTranspilabilityAnalyzer >> allSelectorsIn: selectors sentBy: method [
-	^method literals select: [ :aLiteral |
-		self isLiteral: aLiteral senderOfAny: selectors ]
-]
-
 { #category : 'analyzing' }
 TaTranspilabilityAnalyzer >> candidatePragmaSelectors [
 
@@ -70,22 +46,18 @@ TaTranspilabilityAnalyzer >> candidatePragmaSelectors [
 ]
 
 { #category : 'accessing' }
-TaTranspilabilityAnalyzer >> compilationRelatedClasses [
-
-	^ self compilerClasses asSet copyWithAll: self compilerPluginClasses 
-]
-
-{ #category : 'accessing' }
 TaTranspilabilityAnalyzer >> compilationRelatedMethods [
 
-	^ self compilationRelatedClasses flatCollect: [ : each | each methods ]
+	^ self compilerMethods asSet 
+		addAll: self compilerPluginMethods;
+		yourself
 ]
 
 { #category : 'accessing' }
-TaTranspilabilityAnalyzer >> compilerClasses [
+TaTranspilabilityAnalyzer >> compilerMethods [
 
 	^ self compilerPackages flatCollect: [ : name | 
-		(Smalltalk packageOrganizer packageNamed: name) classes ].
+		(Smalltalk packageOrganizer packageNamed: name) methods ].
 ]
 
 { #category : 'analyzing' }
@@ -111,6 +83,28 @@ TaTranspilabilityAnalyzer >> compilerPackages [
 TaTranspilabilityAnalyzer >> compilerPluginClasses [
 
 	^ OCASTCompilerPlugin withAllSubclasses 
+]
+
+{ #category : 'accessing' }
+TaTranspilabilityAnalyzer >> compilerPluginMethods [
+
+	^ self compilerPluginClasses flatCollect: [ : class | 
+		class methods ].
+]
+
+{ #category : 'analyzing' }
+TaTranspilabilityAnalyzer >> dictionaryWithSelectorsOfPragmasAffectingCompilation [
+
+	| methods selectors dictionary methodSet |
+	methods := self compilerMethodsSendingPragmaSelectors.
+	selectors := self selectorsOfPragmasAffectingCompilation.
+	dictionary := Dictionary new.
+	methods do: [ : aMethod | 
+		selectors do: [ : aSelector | 
+					methodSet := dictionary at: aSelector ifAbsentPut: [ Set new ].
+					(self isMethod: aMethod senderOf: aSelector) ifTrue: [ methodSet add: aMethod ]
+			] ].
+	^dictionary
 ]
 
 { #category : 'analyzing' }
@@ -140,20 +134,11 @@ TaTranspilabilityAnalyzer >> isMethod: method senderOfAny: selectors [
 		self isLiteral: aLiteral senderOfAny: selectors ]
 ]
 
-{ #category : 'OLD' }
-TaTranspilabilityAnalyzer >> newAnalysis [
-
-	^TaAnalysis new
-		allPragmaSelectors: self allPragmaSelectors;
-		allMethods: self allMethods;
-		yourself
-]
-
 { #category : 'analyzing' }
 TaTranspilabilityAnalyzer >> pragmasAffectingCompilation [
 	| selectors |
 	selectors := self selectorsOfPragmasAffectingCompilation.
-	^self allPragmas select: [ : each | selectors includes: each selector ]
+	^self allPragmas select: [ : pragma | selectors includes: pragma selector ]
 ]
 
 { #category : 'analyzing' }

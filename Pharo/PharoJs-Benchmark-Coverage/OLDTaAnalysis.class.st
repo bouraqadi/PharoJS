@@ -1,5 +1,5 @@
 Class {
-	#name : 'TaAnalysis',
+	#name : 'OLDTaAnalysis',
 	#superclass : 'Object',
 	#instVars : [
 		'allPragmaSelectors',
@@ -15,7 +15,7 @@ Class {
 }
 
 { #category : 'accessing' }
-TaAnalysis class >> allPoblematicPragmaSelectors [
+OLDTaAnalysis class >> allPoblematicPragmaSelectors [
 	"Is there a way to at least partially automate extracting this collection?"
 
 	^ #( #ffiCalloutTranslator #primitive: #primitive:error:
@@ -24,19 +24,19 @@ TaAnalysis class >> allPoblematicPragmaSelectors [
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> allClassesAndTraits [
+OLDTaAnalysis >> allClassesAndTraits [
 
 	^ allClassesAndTraits
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> allMethods [
+OLDTaAnalysis >> allMethods [
 
 	^ allCompiledMethods
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> allMethods: allMethods [
+OLDTaAnalysis >> allMethods: allMethods [
 
 	allCompiledMethods := allMethods asSortedCollection: [ :a :b |
 		                      a selector < b selector ].
@@ -46,13 +46,13 @@ TaAnalysis >> allMethods: allMethods [
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> allPragmaSelectors [
+OLDTaAnalysis >> allPragmaSelectors [
 
 	^ allPragmaSelectors
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> allPragmaSelectors: somePragmas [
+OLDTaAnalysis >> allPragmaSelectors: somePragmas [
 
 	allPragmaSelectors := somePragmas asSet asSortedCollection.
 	problematicPragmaSelectors := self class allPoblematicPragmaSelectors
@@ -61,23 +61,23 @@ TaAnalysis >> allPragmaSelectors: somePragmas [
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> allPragmas [
+OLDTaAnalysis >> allPragmas [
 	^Pragma all
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> imageDescription [
+OLDTaAnalysis >> imageDescription [
 	^SystemVersion current version
 ]
 
 { #category : 'printing' }
-TaAnalysis >> metricsString [
+OLDTaAnalysis >> metricsString [
 
 	^ metricsStream contents
 ]
 
 { #category : 'printing' }
-TaAnalysis >> metricsWritingArray [
+OLDTaAnalysis >> metricsWritingArray [
 
 	| allMethodsCount thisContextMethodsCount allClassesAndTraitsCount problematicPragmasCount allPragmasCount problematicPragmaMethodsCount problameticMethodsCount problematicClassesAndTraitsCount |
 	allMethodsCount := self allMethods size.
@@ -135,7 +135,7 @@ TaAnalysis >> metricsWritingArray [
 ]
 
 { #category : 'printing' }
-TaAnalysis >> percentOf: numerator by: denominator [
+OLDTaAnalysis >> percentOf: numerator by: denominator [
 
 	| percent |
 	percent := (numerator * 100 / denominator) asFloat.
@@ -146,14 +146,14 @@ TaAnalysis >> percentOf: numerator by: denominator [
 ]
 
 { #category : 'printing' }
-TaAnalysis >> printMetricsOnTranscript [
+OLDTaAnalysis >> printMetricsOnTranscript [
 
 	self writeMetrics.
 	Transcript crShow: self metricsString
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> problematicClassesAndTraits [
+OLDTaAnalysis >> problematicClassesAndTraits [
 	"A class and its metaclass count for 1.
 	Same for a Trait and its classTrait"
 
@@ -161,37 +161,37 @@ TaAnalysis >> problematicClassesAndTraits [
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> problematicMethods [
+OLDTaAnalysis >> problematicMethods [
 	^(self problematicPragmaMethods, self thisContextMethods) asSet 
 
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> problematicPragmaMethods [
+OLDTaAnalysis >> problematicPragmaMethods [
 
 	^ self problematicPragmas collect: [: each | each method ]
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> problematicPragmaSelectors [
+OLDTaAnalysis >> problematicPragmaSelectors [
 	^problematicPragmaSelectors
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> problematicPragmas [
+OLDTaAnalysis >> problematicPragmas [
 	^self allPragmas select: [ : each | 
 		self problematicPragmaSelectors includes: each selector ]
 	
 ]
 
 { #category : 'accessing' }
-TaAnalysis >> thisContextMethods [
+OLDTaAnalysis >> thisContextMethods [
 
 	^ thisContextMethods
 ]
 
 { #category : 'printing' }
-TaAnalysis >> writeArray: anArray [
+OLDTaAnalysis >> writeArray: anArray [
 
 	anArray do: [  :each | 
 		metricsStream << each asString
@@ -200,7 +200,7 @@ TaAnalysis >> writeArray: anArray [
 ]
 
 { #category : 'printing' }
-TaAnalysis >> writeMetrics [
+OLDTaAnalysis >> writeMetrics [
 
 	metricsStream := WriteStream on: String new.
 	self metricsWritingArray 
