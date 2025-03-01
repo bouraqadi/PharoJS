@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-           
       # From https://github.com/browser-actions
       # - name: Setup Firefox
       #   uses: browser-actions/setup-firefox@v1
@@ -28,19 +27,20 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb
 
-      - name: test xdg open url with Headless Display
-        env:
-          DISPLAY: :99
-        run: |
-          # Start Xvfb on display :99 with a screen resolution of 1024x768 and 24-bit color depth
-          Xvfb :99 -screen 0 1024x768x24 &
-          # Allow Xvfb some time to start
-          sleep 3
-          if xdg-open https://example.com; then
-            echo "✅ xdg-open executed successfully"
-          else
-            echo "❌ xdg-open failed (expected in headless environment)"
-            exit 1
-          fi
+      # From https://github.com/actions/checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # From https://github.com/GabrielBB/xvfb-action
+      - name: Run headless test
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: |
+            if xdg-open https://example.com; then
+              echo "✅ xdg-open executed successfully"
+            else
+              echo "❌ xdg-open failed (expected in headless environment)"
+              exit 1
+            fi
 
       
