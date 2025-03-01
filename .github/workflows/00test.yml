@@ -31,10 +31,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # From https://github.com/GabrielBB/xvfb-action
+      # From 
       - name: Run headless test
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: xdg-open https://example.com
+        run:  xvfb-run xdg-open https://example.com
 
       
