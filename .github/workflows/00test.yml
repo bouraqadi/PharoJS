@@ -33,6 +33,6 @@ jobs:
 
       # From 
       - name: Run headless test
-        run:  xvfb-run --auto-servernum xdg-open https://example.com
+        run:  xvfb-run --auto-servernum "-screen 0 1024x768x24" xdg-open https://example.com
 
       
