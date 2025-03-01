@@ -37,7 +37,7 @@ jobs:
       # https://github.com/marketplace/actions/setup-node-js-environment
       - uses: actions/setup-node@v4
         with:
-          node-version: '20' # We don't use node-version 'latest' because V20 is required by setup-xvfb@v1 to run tests headless
+          node-version: 'latest' 
           # cache: 'npm'
           # cache-dependency-path: '**/package-lock.json'
 
