@@ -20,6 +20,7 @@ jobs:
             echo "✅ xdg-open executed successfully"
           else
             echo "❌ xdg-open failed (expected in headless environment)"
+            exit 1
           fi
 
       
