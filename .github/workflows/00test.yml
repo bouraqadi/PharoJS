@@ -14,6 +14,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Headless Display
+        uses: pyvista/setup-headless-display-action@v3
+   
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+       
       - name: test xdg open url
         run: |
           if xdg-open https://example.com; then
