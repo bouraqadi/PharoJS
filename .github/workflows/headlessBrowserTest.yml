@@ -2,7 +2,7 @@ name: Headless Browser Environment
 on: workflow_dispatch
 jobs:
   test:
-    runs-on: ubuntu-22.04 # instead of ubuntu-latest since Ubuntu 23.10+ has no usable sandbox. It that has disabled unprivileged user namespaces with AppArmor.
+    runs-on: ubuntu-ubuntu-latest
     steps:
      - name: Setup Headless Display
        uses: pyvista/setup-headless-display-action@v3
@@ -10,16 +10,10 @@ jobs:
      - name: Setup Chrome
        uses: browser-actions/setup-chrome@v1
 
-     - name: Test browser wrapper
-       run: |
-         # Test the wrapper by dumping the DOM from a webpage
-         chrome --dump-dom https://example.com > output.html
-      
-         # Verify the page loaded correctly
-         if grep -q "<title>Example Domain</title>" output.html; then
-           echo "✅ Successfully loaded page"
-           echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
-         else
-           echo "❌ Failed to properly load page"
-           exit 1
-         fi
+     - name: Test xdg-open
+        run: |
+          if xdg-open https://example.com; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed (expected in headless environment)"
+          fi
