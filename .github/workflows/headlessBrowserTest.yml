@@ -2,7 +2,7 @@ name: Headless Browser Environment
 on: workflow_dispatch
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04 # instead of ubuntu-latest since Ubuntu 23.10+ has no usable sandbox. It that has disabled unprivileged user namespaces with AppArmor.
     steps:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
