@@ -12,7 +12,7 @@ jobs:
           # Create wrapper script that forces headless mode
           sudo tee /usr/local/bin/chrome-wrapper > /dev/null << 'EOF'
           #!/bin/bash
-          exec chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage "$@"
+          exec chrome --headless --disable-gpu --no-sandbox --disable-setuid-sandbox --remote-debugging-port=9222 --disable-dev-shm-usage "$@"
           EOF
           
           # Make executable
