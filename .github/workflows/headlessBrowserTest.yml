@@ -4,29 +4,36 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Create Chrome headless wrapper
-      run: |
-        mkdir -p ~/bin
-        # Create a wrapper script that forces headless mode
-        echo '#!/bin/bash' > ~/bin/google-chrome
-        echo '/usr/bin/google-chrome --headless --disable-gpu --no-sandbox "$@"' >> ~/bin/google-chrome
-        chmod +x ~/bin/google-chrome
-        # Add wrapper directory to PATH
-        echo "$HOME/bin" >> $GITHUB_PATH
-        
-    - name: Test browser wrapper
-      run: |
-        # Test the wrapper by dumping the DOM from a webpage
-        google-chrome --dump-dom https://example.com > output.html
-  
-        # Verify the page loaded correctly
-        if grep -q "<title>Example Domain</title>" output.html; then
-          echo "✅ Successfully loaded page"
-          echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
-        else
-          echo "❌ Failed to properly load page"
-          exit 1
-        fi
+      - name: Install Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Run the Application with Headless Display
+        env:
+          DISPLAY: :99
+        run: |
+          # Start Xvfb on display :99 with a screen resolution of 1024x768 and 24-bit color depth
+          Xvfb :99 -screen 0 1024x768x24 &
+          # Allow Xvfb some time to start
+          sleep 3
+          
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+         
+      - name: Test browser wrapper
+        run: |
+          # Test the wrapper by dumping the DOM from a webpage
+          google-chrome --dump-dom https://example.com > output.html
+    
+          # Verify the page loaded correctly
+          if grep -q "<title>Example Domain</title>" output.html; then
+            echo "✅ Successfully loaded page"
+            echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
+          else
+            echo "❌ Failed to properly load page"
+            exit 1
+          fi
