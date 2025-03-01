@@ -14,6 +14,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # https://github.com/pyvista/setup-headless-display-action
       - name: Setup Headless Display
         uses: pyvista/setup-headless-display-action@v3
 
