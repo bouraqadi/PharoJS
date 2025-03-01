@@ -1,0 +1,22 @@
+name: Headless Browser Test
+on: workflow_dispatch
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+      
+      - name: Open webpage headlessly and verify
+        run: |
+          chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage \
+          --dump-dom https://example.com > output.html
+          
+          # Verify content exists
+          if grep -q "<title>Example Domain</title>" output.html; then
+            echo "✅ Successfully loaded page"
+            echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
+          else
+            echo "❌ Failed to properly load page"
+            exit 1
+          fi
