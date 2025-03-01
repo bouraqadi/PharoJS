@@ -9,29 +9,28 @@ jobs:
       
       - name: Configure global headless Chrome
         run: |
-          # Create wrapper script that forces headless mode
+          # Create wrapper script that forces headless mode by calling the real Chrome binary
           sudo tee /usr/local/bin/chrome-wrapper > /dev/null << 'EOF'
           #!/bin/bash
-          exec chrome --headless --disable-gpu --no-sandbox --disable-setuid-sandbox --remote-debugging-port=9222 --disable-dev-shm-usage "$@"
+          exec /usr/bin/google-chrome --headless --disable-gpu --no-sandbox --disable-setuid-sandbox --remote-debugging-port=9222 --disable-dev-shm-usage "$@"
           EOF
           
-          # Make executable
+          # Make the wrapper executable
           sudo chmod +x /usr/local/bin/chrome-wrapper
           
-          # Modify PATH to use our wrapper first
+          # Prepend our wrapper directory to the PATH so our commands resolve first
           echo "PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
           
-          # Create symbolic links
+          # Create symbolic links for commands that might be used in tests
           sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chrome
-          sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/google-chrome
           sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chromium-browser
       
       - name: Test browser wrapper
         run: |
-          # Test the wrapper works - need --dump-dom to get HTML content
+          # Test the wrapper by dumping the DOM from a webpage
           chrome --dump-dom https://example.com > output.html
     
-          # Verify content exists
+          # Verify the page loaded correctly
           if grep -q "<title>Example Domain</title>" output.html; then
             echo "✅ Successfully loaded page"
             echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
