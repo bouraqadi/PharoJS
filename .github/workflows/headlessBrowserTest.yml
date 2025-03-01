@@ -28,9 +28,9 @@ jobs:
       
       - name: Test browser wrapper
         run: |
-          # Test the wrapper works
-          chrome https://example.com > output.html
-          
+          # Test the wrapper works - need --dump-dom to get HTML content
+          chrome --dump-dom https://example.com > output.html
+    
           # Verify content exists
           if grep -q "<title>Example Domain</title>" output.html; then
             echo "✅ Successfully loaded page"
