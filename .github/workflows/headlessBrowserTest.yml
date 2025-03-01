@@ -4,7 +4,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-     - uses: pyvista/setup-headless-display-action@v3
+     - name: Setup Headless Display
+       uses: pyvista/setup-headless-display-action@v3
    
      - name: Setup Chrome
        uses: browser-actions/setup-chrome@v1
@@ -12,7 +13,7 @@ jobs:
      - name: Test browser wrapper
        run: |
          # Test the wrapper by dumping the DOM from a webpage
-         google-chrome --dump-dom https://example.com > output.html
+         chrome --dump-dom https://example.com > output.html
       
          # Verify the page loaded correctly
          if grep -q "<title>Example Domain</title>" output.html; then
