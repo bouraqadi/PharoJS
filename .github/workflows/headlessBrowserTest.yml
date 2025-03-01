@@ -2,39 +2,31 @@ name: Headless Browser Environment
 on: workflow_dispatch
 jobs:
   test:
-    runs-on: ubuntu-22.04 # instead of ubuntu-latest since Ubuntu 23.10+ has no usable sandbox. It that has disabled unprivileged user namespaces with AppArmor.
+    runs-on: ubuntu-latest
     steps:
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
-      
-      - name: Configure global headless Chrome
-        run: |
-          # Create wrapper script that forces headless mode by calling the real Chrome binary
-          sudo tee /usr/local/bin/chrome-wrapper > /dev/null << 'EOF'
-          #!/bin/bash
-          exec /usr/bin/google-chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage --enable-features=UseOzonePlatform --ozone-platform=headless "$@"
-          EOF
-          
-          # Make the wrapper executable
-          sudo chmod +x /usr/local/bin/chrome-wrapper
-          
-          # Prepend our wrapper directory to the PATH so our commands resolve first
-          echo "PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
-          
-          # Create symbolic links for commands that might be used in tests
-          sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chrome
-          sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chromium-browser
-      
-      - name: Test browser wrapper
-        run: |
-          # Test the wrapper by dumping the DOM from a webpage
-          chrome --dump-dom https://example.com > output.html
-    
-          # Verify the page loaded correctly
-          if grep -q "<title>Example Domain</title>" output.html; then
-            echo "✅ Successfully loaded page"
-            echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
-          else
-            echo "❌ Failed to properly load page"
-            exit 1
-          fi
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create Chrome headless wrapper
+      run: |
+        mkdir -p ~/bin
+        # Create a wrapper script that forces headless mode
+        echo '#!/bin/bash' > ~/bin/google-chrome
+        echo '/usr/bin/google-chrome --headless --disable-gpu --no-sandbox "$@"' >> ~/bin/google-chrome
+        chmod +x ~/bin/google-chrome
+        # Add wrapper directory to PATH
+        echo "$HOME/bin" >> $GITHUB_PATH
+        
+    - name: Test browser wrapper
+      run: |
+        # Test the wrapper by dumping the DOM from a webpage
+        google-chrome --dump-dom https://example.com > output.html
+  
+        # Verify the page loaded correctly
+        if grep -q "<title>Example Domain</title>" output.html; then
+          echo "✅ Successfully loaded page"
+          echo "Page title found: $(grep -o '<title>[^<]*</title>' output.html)"
+        else
+          echo "❌ Failed to properly load page"
+          exit 1
+        fi
