@@ -17,10 +17,10 @@ jobs:
 
            
       # From https://github.com/browser-actions
-      - name: Setup Firefox
-        uses: browser-actions/setup-firefox@v1
-      # - name: Setup Chrome
-      #   uses: browser-actions/setup-chrome@v1
+      # - name: Setup Firefox
+      #   uses: browser-actions/setup-firefox@v1
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
 
       # https://github.com/marketplace/actions/setup-xvfb 
       - name: Install Xvfb
