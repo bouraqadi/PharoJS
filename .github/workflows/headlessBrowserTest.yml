@@ -12,7 +12,7 @@ jobs:
           # Create wrapper script that forces headless mode by calling the real Chrome binary
           sudo tee /usr/local/bin/chrome-wrapper > /dev/null << 'EOF'
           #!/bin/bash
-          exec /usr/bin/google-chrome --headless --disable-gpu --disable-dev-shm-usage "$@"
+          exec /usr/bin/google-chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage "$@"
           EOF
           
           # Make the wrapper executable
