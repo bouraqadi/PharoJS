@@ -16,9 +16,12 @@ jobs:
     steps:
       - name: Setup Headless Display
         uses: pyvista/setup-headless-display-action@v3
-   
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
+
+      # From https://github.com/browser-actions
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v1
+      # - name: Setup Chrome
+      #   uses: browser-actions/setup-chrome@v1
        
       - name: test xdg open url
         run: |
