@@ -1,4 +1,4 @@
-name: Headless Browser Test
+name: Headless Browser Environment
 on: workflow_dispatch
 jobs:
   test:
@@ -7,10 +7,29 @@ jobs:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
       
-      - name: Open webpage headlessly and verify
+      - name: Configure global headless Chrome
         run: |
-          chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage \
-          --dump-dom https://example.com > output.html
+          # Create wrapper script that forces headless mode
+          sudo tee /usr/local/bin/chrome-wrapper > /dev/null << 'EOF'
+          #!/bin/bash
+          exec chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage "$@"
+          EOF
+          
+          # Make executable
+          sudo chmod +x /usr/local/bin/chrome-wrapper
+          
+          # Modify PATH to use our wrapper first
+          echo "PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
+          
+          # Create symbolic links
+          sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chrome
+          sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/google-chrome
+          sudo ln -sf /usr/local/bin/chrome-wrapper /usr/local/bin/chromium-browser
+      
+      - name: Test browser wrapper
+        run: |
+          # Test the wrapper works
+          chrome https://example.com > output.html
           
           # Verify content exists
           if grep -q "<title>Example Domain</title>" output.html; then
