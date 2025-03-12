@@ -34,12 +34,20 @@ jobs:
         run: |
           echo "#!/bin/bashrc \necho ${@}" > /tmp/chromeHeadless
           chmod u+x /tmp/chromeHeadless
+
+      - name: Test running script
+        run: /tmp/chromeHeadless https://example.com
           
+      # - name: Setup default browser
+      #   run: |
+      #     sudo update-alternatives --install /usr/bin/www-browser www-browser /tmp/chromeHeadless 100
+      #     sudo update-alternatives --set www-browser /tmp/chromeHeadless
       - name: Setup default browser
         run: |
           sudo update-alternatives --install /usr/bin/www-browser www-browser /tmp/chromeHeadless 100
           sudo update-alternatives --set www-browser /tmp/chromeHeadless
-          
+          ls -l /etc/alternatives | grep browser
+
       - name: Test openning some URL
         run: |
           if xdg-open https://example.com; then
