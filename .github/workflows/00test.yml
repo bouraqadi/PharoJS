@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo tee /usr/local/bin/chromeHeadless > /dev/null << 'EOF'
           #!/bin/sh
-          google-chrome --headless --disable-gpu --no-sandbox ${@}
+          google-chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage --enable-features=UseOzonePlatform --ozone-platform=headless ${@}
           EOF
   
           sudo chmod +x /usr/local/bin/chromeHeadless
