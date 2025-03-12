@@ -24,7 +24,9 @@ jobs:
           
       # Start Xvfb on display :99
       - name: Start Xvfb
-        run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
 
       - name: Create headless browser script
         run: |
@@ -33,8 +35,13 @@ jobs:
           export MOZ_HEADLESS=1
           export MOZ_DISABLE_GMP_SANDBOX=1 
           export MOZ_DISABLE_GPU_SANDBOX=1
+          export MOZ_DISABLE_CONTENT_SANDBOX=1
+          export MOZ_DISABLE_RDD_SANDBOX=1
+          export MOZ_WEBRENDER=0
+          export LIBGL_ALWAYS_SOFTWARE=1
+          export MOZ_X11_EGL=0
           export DISPLAY=:99  # Match the Xvfb display
-          firefox firefox -headless -no-remote --new-instance "${@}"
+          firefox firefox -headless -no-remote "${@}"
           EOF
 
           sudo chmod +x /usr/local/bin/webBrowserHeadless
