@@ -34,6 +34,8 @@ jobs:
         run: |
           echo "#!/bin/bashrc \necho ${@}" > $HOME/chromeHeadless
           chmod u+x $HOME/chromeHeadless
+          ls -l $HOME/chromeHeadless
+          $HOME/chromeHeadless https://example.com
 
       - name: Test running script
         run: $HOME/chromeHeadless https://example.com
