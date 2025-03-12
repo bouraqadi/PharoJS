@@ -22,17 +22,20 @@ jobs:
         uses: browser-actions/setup-chrome@v1
 
       # https://github.com/marketplace/actions/setup-xvfb 
-      - name: Install Xvfb
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
-
-      # From https://github.com/actions/checkout
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      # - name: Install Xvfb
+      #  run: |
+      #    sudo apt-get update
+      #    sudo apt-get install -y xvfb
       # From 
-      - name: Run headless test
-        run:  xvfb-run --auto-servernum "-screen 0 1024x768x24" xdg-open https://example.com
+      # - name: Run headless test
+      #  run:  xvfb-run --auto-servernum "-screen 0 1024x768x24" xdg-open https://example.com
 
-      
+       - name: Create launcher script
+         run: |
+           sudo echo "#!/bin/bashrc \
+             google-chrome --headless $@" > /usr/bin/chromeHeadless
+           sudo chmod u+x /usr/bin/chromeHeadless
+           sudo update-alternatives --install /usr/bin/x-www-browser /usr/bin/chromeHeadless 100
+           sudo update-alternatives --config x-www-browser
+           xdg-open http://www.example.com
+          
