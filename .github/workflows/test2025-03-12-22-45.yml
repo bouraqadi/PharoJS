@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libgl1 libgl1-mesa-dri
+          sudo apt-get install -y xvfb libgl1 libgl1-mesa-dri libgl1-mesa-glx libegl1 libegl1-mesa libxcb-dri3-0 libxcb-xtest0
           
       # Start Xvfb on display :99
       - name: Start Xvfb
@@ -28,28 +28,27 @@ jobs:
 
       - name: Create headless browser script
         run: |
-          sudo tee /usr/local/bin/webBroswerHeadless > /dev/null << 'EOF'
+          sudo tee /usr/local/bin/webBrowserHeadless > /dev/null << 'EOF'
           #!/bin/sh
           export MOZ_HEADLESS=1
           export MOZ_DISABLE_GMP_SANDBOX=1 
           export MOZ_DISABLE_GPU_SANDBOX=1
           export DISPLAY=:99  # Match the Xvfb display
-          firefox firefox -headless -no-remote -new-instances "${@}"
+          firefox firefox -headless -no-remote --new-instance "${@}"
           EOF
 
-          sudo chmod +x /usr/local/bin/webBroswerHeadless
+          sudo chmod +x /usr/local/bin/webBrowserHeadless
 
-      # Remaining steps unchanged...
       - name: Verify script creation
         run: |
-          ls -l /usr/local/bin/webBroswerHeadless
-          cat /usr/local/bin/webBroswerHeadless
-          /usr/local/bin/webBroswerHeadless https://example.com
+          ls -l /usr/local/bin/webBrowserHeadless
+          cat /usr/local/bin/webBrowserHeadless
+          /usr/local/bin/webBrowserHeadless https://example.com
 
       - name: Setup default browser
         run: |
-          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBroswerHeadless 100
-          sudo update-alternatives --set www-browser /usr/local/bin/webBroswerHeadless
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBrowserHeadless 100
+          sudo update-alternatives --set www-browser /usr/local/bin/webBrowserHeadless
           ls -l /etc/alternatives | grep browser
 
       - name: Test opening some URL
