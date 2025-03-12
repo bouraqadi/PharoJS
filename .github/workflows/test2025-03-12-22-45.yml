@@ -1,0 +1,60 @@
+name: Test 25-03-12 22:45
+
+# Controls when the workflow will run
+on:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+  # This workflow contains a single job called "build"
+    runs-on: ubuntu-latest
+    steps:
+      # From https://github.com/browser-actions
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v1
+
+      # Install necessary dependencies for headless Firefox
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-glx
+
+      # Start Xvfb on display :99
+      - name: Start Xvfb
+        run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+
+      - name: Create headless browser script
+        run: |
+          sudo tee /usr/local/bin/webBroswerHeadless > /dev/null << 'EOF'
+          #!/bin/sh
+          export DISPLAY=:99  # Match the Xvfb display
+          export DBUS_SESSION_BUS_ADDRESS=/dev/null
+          firefox --headless "${@}"
+          EOF
+
+          sudo chmod +x /usr/local/bin/webBroswerHeadless
+
+      # Remaining steps unchanged...
+      - name: Verify script creation
+        run: |
+          ls -l /usr/local/bin/webBroswerHeadless
+          cat /usr/local/bin/webBroswerHeadless
+          /usr/local/bin/webBroswerHeadless https://example.com
+
+      - name: Setup default browser
+        run: |
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBroswerHeadless 100
+          sudo update-alternatives --set www-browser /usr/local/bin/webBroswerHeadless
+          ls -l /etc/alternatives | grep browser
+
+      - name: Test opening some URL
+        run: |
+          if xdg-open https://example.com; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed"
+            exit 1
+          fi
