@@ -32,7 +32,8 @@ jobs:
 
       - name: Create headless browser script
         run: |
-          echo "#!/bin/sh \necho ${@}" > $HOME/chromeHeadless
+          echo "#!/bin/sh" > $HOME/chromeHeadless
+          echo "echo ${@}" >> $HOME/chromeHeadless
           chmod +x $HOME/chromeHeadless
           ls -l $HOME/chromeHeadless
           $HOME/chromeHeadless https://example.com
