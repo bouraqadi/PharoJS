@@ -1,0 +1,45 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Test 00
+
+# Controls when the workflow will run
+on:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      # From https://github.com/browser-actions
+      # - name: Setup Firefox
+      #   uses: browser-actions/setup-firefox@v1
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      # https://github.com/marketplace/actions/setup-xvfb 
+      # - name: Install Xvfb
+      #  run: |
+      #    sudo apt-get update
+      #    sudo apt-get install -y xvfb
+      # From 
+      # - name: Run headless test
+      #  run:  xvfb-run --auto-servernum "-screen 0 1024x768x24" xdg-open https://example.com
+
+       - name: Create launcher script
+         run: |
+           sudo echo "#!/bin/bashrc \
+             google-chrome --headless $@" > /usr/bin/chromeHeadless
+           sudo chmod u+x /usr/bin/chromeHeadless
+           sudo update-alternatives --install /usr/bin/x-www-browser /usr/bin/chromeHeadless 100
+           sudo update-alternatives --config x-www-browser
+           if xdg-open https://example.com; then
+             echo "✅ xdg-open executed successfully"
+           else
+             echo "❌ xdg-open failed (expected in headless environment)"
+           fi
+          
