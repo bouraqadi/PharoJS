@@ -16,32 +16,32 @@ jobs:
     steps:
 
       # From https://github.com/browser-actions
-      # - name: Setup Firefox
-      #   uses: browser-actions/setup-firefox@v1
-      - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v1
+      - name: Setup Firefox
+        uses: browser-actions/setup-firefox@v1
+      # - name: Setup Chrome
+      #   uses: browser-actions/setup-chrome@v1
 
       - name: Create headless browser script
         run: |
-          sudo tee /usr/local/bin/chromeHeadless > /dev/null << 'EOF'
+          sudo tee /usr/local/bin/webBroswerHeadless > /dev/null << 'EOF'
           #!/bin/sh
           export DISPLAY=:99
           export DBUS_SESSION_BUS_ADDRESS=/dev/null
-          google-chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-software-rasterizer --disable-dbus --mute-audio "${@}"
+          firefox --headless "${@}"
           EOF
   
-          sudo chmod +x /usr/local/bin/chromeHeadless
+          sudo chmod +x /usr/local/bin/webBroswerHeadless
           
       - name: Verify script creation
         run: |
-          ls -l /usr/local/bin/chromeHeadless
-          cat /usr/local/bin/chromeHeadless
-          /usr/local/bin/chromeHeadless https://example.com
+          ls -l /usr/local/bin/webBroswerHeadless
+          cat /usr/local/bin/webBroswerHeadless
+          /usr/local/bin/webBroswerHeadless https://example.com
           
       - name: Setup default browser
         run: |
-          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/chromeHeadless 100
-          sudo update-alternatives --set www-browser /usr/local/bin/chromeHeadless
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBroswerHeadless 100
+          sudo update-alternatives --set www-browser /usr/local/bin/webBroswerHeadless
           ls -l /etc/alternatives | grep browser
 
       - name: Test openning some URL
@@ -50,5 +50,6 @@ jobs:
             echo "✅ xdg-open executed successfully"
           else
             echo "❌ xdg-open failed"
+            exit 1
           fi
         
