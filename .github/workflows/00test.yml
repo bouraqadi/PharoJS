@@ -41,7 +41,7 @@ jobs:
       # - name: Setup default browser
       #   run: |
       #     sudo update-alternatives --install /usr/bin/www-browser www-browser ${HOME}/chromeHeadless 100
-      #     sudo update-alternatives --set www-browser ~/chromeHeadless
+      #     sudo update-alternatives --set www-browser ${HOME}/chromeHeadless
       - name: Setup default browser
         run: |
           sudo update-alternatives --install /usr/bin/www-browser www-browser ${HOME}/chromeHeadless 100
