@@ -30,16 +30,21 @@ jobs:
       # - name: Run headless test
       #  run:  xvfb-run --auto-servernum "-screen 0 1024x768x24" xdg-open https://example.com
 
-       - name: Create launcher script
-         run: |
-           sudo echo "#!/bin/bashrc \
-             google-chrome --headless $@" > /usr/bin/chromeHeadless
-           sudo chmod u+x /usr/bin/chromeHeadless
-           sudo update-alternatives --install /usr/bin/x-www-browser /usr/bin/chromeHeadless 100
-           sudo update-alternatives --config x-www-browser
-           if xdg-open https://example.com; then
-             echo "✅ xdg-open executed successfully"
-           else
-             echo "❌ xdg-open failed (expected in headless environment)"
-           fi
+      - name: Create headless browser script
+        run: |
+          sudo echo "#!/bin/bashrc \necho ${@}" > /usr/bin/chromeHeadless
+          sudo chmod u+x /usr/bin/chromeHeadless
           
+      - name: Setup default browser
+        run: |
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/chromeHeadless 100
+          sudo update-alternatives --set www-browser /usr/bin/chromeHeadless
+          
+      - name: Test openning some URL
+        run: |
+          if xdg-open https://example.com; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed (expected in headless environment)"
+          fi
+        
