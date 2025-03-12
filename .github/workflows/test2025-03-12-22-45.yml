@@ -42,7 +42,7 @@ jobs:
           export LIBGL_ALWAYS_SOFTWARE=1
           export MOZ_X11_EGL=0
           export DISPLAY=:99  # Match the Xvfb display
-          firefox firefox --headless --disable-gpu --disable-software-rasterizer --no-remote --marionette "${@}"
+          firefox --headless --disable-gpu --disable-software-rasterizer --no-remote --marionette "${@}"
           EOF
 
           sudo chmod +x /usr/local/bin/webBrowserHeadless
