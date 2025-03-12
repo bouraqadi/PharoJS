@@ -32,7 +32,7 @@ jobs:
 
       - name: Create headless browser script
         run: |
-          echo "#!/bin/bashrc \necho ${@}" > ~/chromeHeadless
+          echo "#!/bin/bashrc \necho ${@}" > ${HOME}/chromeHeadless
           chmod u+x ${HOME}/chromeHeadless
 
       - name: Test running script
@@ -53,6 +53,6 @@ jobs:
           if xdg-open https://example.com; then
             echo "✅ xdg-open executed successfully"
           else
-            echo "❌ xdg-open failed (expected in headless environment)"
+            echo "❌ xdg-open failed (expects headless environment)"
           fi
         
