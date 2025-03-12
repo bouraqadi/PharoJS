@@ -30,9 +30,11 @@ jobs:
         run: |
           sudo tee /usr/local/bin/webBroswerHeadless > /dev/null << 'EOF'
           #!/bin/sh
+          export MOZ_HEADLESS=1
+          export MOZ_DISABLE_GMP_SANDBOX=1 
+          export MOZ_DISABLE_GPU_SANDBOX=1
           export DISPLAY=:99  # Match the Xvfb display
-          export DBUS_SESSION_BUS_ADDRESS=/dev/null
-          firefox --headless "${@}"
+          firefox firefox -headless -no-remote -new-instances "${@}"
           EOF
 
           sudo chmod +x /usr/local/bin/webBroswerHeadless
