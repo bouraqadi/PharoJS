@@ -32,13 +32,13 @@ jobs:
 
       - name: Create headless browser script
         run: |
-          sudo echo "#!/bin/bashrc \necho ${@}" > /usr/bin/chromeHeadless
-          sudo chmod u+x /usr/bin/chromeHeadless
+          echo "#!/bin/bashrc \necho ${@}" > /tmp/chromeHeadless
+          chmod u+x /tmp/chromeHeadless
           
       - name: Setup default browser
         run: |
-          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/bin/chromeHeadless 100
-          sudo update-alternatives --set www-browser /usr/bin/chromeHeadless
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /tmp/chromeHeadless 100
+          sudo update-alternatives --set www-browser /tmp/chromeHeadless
           
       - name: Test openning some URL
         run: |
