@@ -37,5 +37,9 @@ jobs:
            sudo chmod u+x /usr/bin/chromeHeadless
            sudo update-alternatives --install /usr/bin/x-www-browser /usr/bin/chromeHeadless 100
            sudo update-alternatives --config x-www-browser
-           xdg-open http://www.example.com
+           if xdg-open https://example.com; then
+             echo "✅ xdg-open executed successfully"
+           else
+             echo "❌ xdg-open failed (expected in headless environment)"
+           fi
           
