@@ -25,9 +25,7 @@ jobs:
         run: |
           sudo tee /usr/local/bin/webBroswerHeadless > /dev/null << 'EOF'
           #!/bin/sh
-          export DISPLAY=:99
-          export DBUS_SESSION_BUS_ADDRESS=/dev/null
-          firefox --headless "${@}"
+          firefox -headless "${@}"
           EOF
   
           sudo chmod +x /usr/local/bin/webBroswerHeadless
