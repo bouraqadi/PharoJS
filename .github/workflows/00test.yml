@@ -21,19 +21,10 @@ jobs:
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
 
-      # https://github.com/marketplace/actions/setup-xvfb 
-      # - name: Install Xvfb
-      #  run: |
-      #    sudo apt-get update
-      #    sudo apt-get install -y xvfb
-      # From 
-      # - name: Run headless test
-      #  run:  xvfb-run --auto-servernum "-screen 0 1024x768x24" xdg-open https://example.com
-
       - name: Create headless browser script
         run: |
           echo "#!/bin/sh" > $HOME/chromeHeadless
-          echo "echo ${@}" >> $HOME/chromeHeadless
+          echo "google-chrome --headless ${@}" >> $HOME/chromeHeadless
           chmod +x $HOME/chromeHeadless
           ls -l $HOME/chromeHeadless
           $HOME/chromeHeadless https://example.com
