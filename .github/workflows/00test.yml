@@ -25,7 +25,9 @@ jobs:
         run: |
           sudo tee /usr/local/bin/chromeHeadless > /dev/null << 'EOF'
           #!/bin/sh
-          google-chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage "${@}"
+          export DISPLAY=:99
+          export DBUS_SESSION_BUS_ADDRESS=/dev/null
+          google-chrome --headless --disable-gpu --no-sandbox --disable-dev-shm-usage --disable-software-rasterizer --disable-dbus --mute-audio "${@}"
           EOF
   
           sudo chmod +x /usr/local/bin/chromeHeadless
