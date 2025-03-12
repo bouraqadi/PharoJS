@@ -33,12 +33,14 @@ jobs:
       - name: Create headless browser script
         run: |
           echo "#!/bin/bashrc \necho ${@}" > $HOME/chromeHeadless
-          chmod u+x $HOME/chromeHeadless
+          chmod +x $HOME/chromeHeadless
           ls -l $HOME/chromeHeadless
           $HOME/chromeHeadless https://example.com
 
       - name: Test running script
-        run: $HOME/chromeHeadless https://example.com
+        run: |
+          ls -l $HOME/chromeHeadless
+          $HOME/chromeHeadless https://example.com
           
       # - name: Setup default browser
       #   run: |
