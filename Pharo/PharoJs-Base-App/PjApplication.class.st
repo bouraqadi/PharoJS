@@ -63,16 +63,14 @@ PjApplication class >> ensureRequiredPackagesInstalled [
 	self npmPackageNames ifEmpty: [
 		^ self inform: 'No NPM package required' ].
 	self inform:
-		'Ensure required NPM pacakges installed for ' , self name.
+		'Ensure required NPM packages installed for ' , self name.
 	self inAppFolderRunCommandLine: [ :str |
-		str << 'npm init -y;'.
-		self npmPackageNames do: [ :packageName |
-			str
-				<< 'npm list ';
-				<< packageName;
-				<< '||npm install ';
-				<< packageName;
-				<< $; ] ]
+		str << 'npm init -y'.
+		self writeCommandDelimiterOn: str.
+		self npmPackageNames
+			do: [ :packageName |
+			self writeEnsureNpmPackage: packageName on: str ]
+			separatedBy: [ self writeCommandDelimiterOn: str ] ]
 ]
 
 { #category : 'accessing' }
@@ -88,12 +86,19 @@ PjApplication class >> inAppFolderRunCommandLine: aBlock [
 	<pharoJsSkip>
 	| commandLine |
 	commandLine := String streamContents: [ :str |
-		               str
-			               << 'cd ';
-			               << self appFullJsFolderPath pathString;
-			               << $;.
+		               str << 'cd "' << self appFullJsFolderPath pathString
+		               << '"'.
+		               self writeCommandDelimiterOn: str.
 		               aBlock value: str ].
-	LibC system: commandLine
+	OSPlatform current isWindows ifTrue: [
+		self
+			shellExecute: 'open'
+			file: 'C:\Windows\System32\cmd.exe'
+			parameters: '/C ' , commandLine
+			directory: ''
+			show: 5. "SW_SHOW"
+		^ self ].
+	LibC resultOfCommand: commandLine
 ]
 
 { #category : 'node package management' }
@@ -150,6 +155,19 @@ PjApplication class >> setupCode [
 	^ ''
 ]
 
+{ #category : 'node package management' }
+PjApplication class >> shellExecute: lpOperation file: lpFile parameters: lpParameters directory: lpDirectory show: nShowCmd [
+	<pharoJsSkip>
+	^ self ffiCall: #(
+			FFIConstantHandle ShellExecuteA(
+     				int 0, "Operation is not associated with a window"
+     				String lpOperation,
+         			String lpFile,
+     				String lpParameters,
+     				String lpDirectory,
+        			int nShowCmd)) module: #shell32
+]
+
 { #category : 'start-stop application' }
 PjApplication class >> start [
 	<script>
@@ -178,15 +196,35 @@ PjApplication class >> whenJsReady: aBlock [
 	self subclassResponsibility
 ]
 
-{ #category : 'modules' }
-PjApplication >> modulesManager [
-	^PjNodeModulesManager default
+{ #category : 'node package management' }
+PjApplication class >> writeCommandDelimiterOn: str [
+
+	<pharoJsSkip>
+	OSPlatform current isWindows ifTrue: [
+		str << '&&'.
+		^ self ].
+	str << ';'
+]
+
+{ #category : 'node package management' }
+PjApplication class >> writeEnsureNpmPackage: packageName on: str [
+
+	<pharoJsSkip>
+	OSPlatform current isWindows ifTrue: [
+		str << 'npm list ' << packageName
+		<< ' >nul 2>&1 || npm install ' << packageName.
+		^ self ].
+	str << 'npm list ' << packageName.
+	str << '||'.
+	str << 'npm install ' << packageName
 ]
 
 { #category : 'modules' }
-PjApplication >> require: aString [
+PjApplication >> require: jsModuleName [
+	"Loads the JS module if not in cache see https://iifx.dev/en/articles/43105256 "
+	"Note: Smalltalk global is transpiled to globalThis."
 
-	^ self modulesManager require: aString
+	^ Smalltalk require: jsModuleName
 ]
 
 { #category : 'start-stop' }

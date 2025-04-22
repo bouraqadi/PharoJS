@@ -78,10 +78,22 @@ PjExporter >> addPackage: packageName [
 			 #instanceSide) asSet
 ]
 
+{ #category : 'writing' }
+PjExporter >> afterExportApp [
+
+	self appClass afterExportApp
+]
+
 { #category : 'accessing' }
 PjExporter >> appClass [
 
 	^ appClass
+]
+
+{ #category : 'writing' }
+PjExporter >> beforeExportApp [
+
+	self appClass beforeExportApp
 ]
 
 { #category : 'accessing' }
@@ -592,11 +604,25 @@ PjExporter >> writeGlobalsPolyfills: pools [
 { #category : 'writing' }
 PjExporter >> writeJsCode [
 
-	self appClass beforeExportApp.
-	self writeJsCoreAndBootstrap.
-	self writeNonBootstrapClasses.
-	self writeLaunchCode.
-	self appClass afterExportApp
+	| baseTitle stepAssociations |
+	baseTitle := self appClass name , ' Export: '.
+	stepAssociations := {
+		                    (#beforeExportApp
+		                     -> 'Performing Before Export Action').
+		                    (#writeJsCoreAndBootstrap
+		                     -> 'Writing JS Core and Bootstrap Code').
+		                    (#writeNonBootstrapClasses
+		                     -> 'Writing Remaining Classes').
+		                    (#writeLaunchCode -> 'Writing Launch Code').
+		                    (#afterExportApp
+		                     -> 'Performing After Export Action') }.
+	[ :job |
+	job title: baseTitle.
+	stepAssociations withIndexDo: [ :association :index |
+		job
+			title: baseTitle , association value;
+			progress: index / stepAssociations size.
+		self perform: association key ] ] asJob run
 ]
 
 { #category : 'writing' }

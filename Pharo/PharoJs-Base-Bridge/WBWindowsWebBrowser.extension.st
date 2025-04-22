@@ -27,7 +27,7 @@ WBWindowsWebBrowser class >> openTerminalWithNodeOn: theFileName inFolder: anObj
 	self
 		shellExecute: 'open'
 		file: 'node'
-		parameters: theFileName
+		parameters: '"' , theFileName , '"'
 		directory: ''
 		show: 5 "SW_SHOW"
 ]

@@ -93,6 +93,12 @@ PjTWebAppTestCase >> computedStyleOf: element [
 	^ self window getComputedStyle: element
 ]
 
+{ #category : 'asserting' }
+PjTWebAppTestCase >> deny: element hasCssClass: cssClassString [
+
+	self deny: (element classList contains: cssClassString)
+]
+
 { #category : 'UI handling' }
 PjTWebAppTestCase >> dispatchEvent: eventName to: htmlElement [
 	htmlElement dispatchEvent: (self newEvent: eventName)

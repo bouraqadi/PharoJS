@@ -104,6 +104,12 @@ PjBridgeAppClassDecorator >> headerLine [
 ]
 
 { #category : 'accessing' }
+PjBridgeAppClassDecorator >> name [
+
+	^rawAppClass name
+]
+
+{ #category : 'accessing' }
 PjBridgeAppClassDecorator >> pharoJsSelectorPrefix [
 	<pharoJsSkip>
 	

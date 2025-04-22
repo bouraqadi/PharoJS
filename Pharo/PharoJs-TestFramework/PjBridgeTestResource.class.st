@@ -121,7 +121,12 @@ PjBridgeTestResource >> isClientBrowserOpenedInBackground [
 
 { #category : 'running' }
 PjBridgeTestResource >> resetClient [
-	self bridge resetClient
+
+	| previousProcesses |
+	previousProcesses := self bridge server childProcesses copy.
+	self bridge resetClient.
+	[previousProcesses do: #terminate.
+	Smalltalk garbageCollect] forkAt: Processor timingPriority "Free system semaphores"
 ]
 
 { #category : 'running' }
