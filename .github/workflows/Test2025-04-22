@@ -1,0 +1,53 @@
+name: Test2025-04-22 : Headless Browser Detection Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-headless-detection:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Install Chrome
+      run: |
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable curl
+        
+    - name: Create test script
+      run: |
+        cat > test_headless.sh << 'EOL'
+        #!/bin/bash
+        set -e
+
+        echo "Starting headless Chrome test to example.com..."
+        
+        # Create a temporary file to capture output
+        OUTPUT_FILE=$(mktemp)
+        
+        # Start Chrome in headless mode and visit example.com
+        # The --dump-dom flag outputs the HTML content of the page
+        google-chrome --headless=new \
+          --disable-gpu \
+          --no-sandbox \
+          --disable-dev-shm-usage \
+          --dump-dom https://example.com > $OUTPUT_FILE 2>/dev/null
+        
+        # Check if the page was loaded successfully
+        if grep -q "<title>Example Domain</title>" $OUTPUT_FILE; then
+          echo "✅ Successfully loaded example.com in headless mode"
+          echo "Page title found: Example Domain"
+        else
+          echo "❌ Failed to load example.com properly in headless mode"
+          echo "Page content:"
+          cat $OUTPUT_FILE
+          exit 1
+        fi
