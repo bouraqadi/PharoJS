@@ -1,4 +1,4 @@
-name: Test2025-04-22 : Headless Browser Detection Test
+name: Test2025-04-22
 
 on:
   push:
