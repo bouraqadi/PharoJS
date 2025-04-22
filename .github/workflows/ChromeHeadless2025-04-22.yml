@@ -1,4 +1,4 @@
-name: Test2025-04-22
+name: ChromeHeadless
 
 on:
   workflow_dispatch:
