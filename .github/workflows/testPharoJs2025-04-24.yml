@@ -28,22 +28,30 @@ jobs:
           
       - name: Create headless browser script
         run: |
-          sudo tee /usr/local/bin/webBroswerHeadless > /dev/null << 'EOF'
+          sudo tee /usr/local/bin/webBrowserHeadless > /dev/null << 'EOF'
           #!/bin/sh
           google-chrome --headless=new \
           --disable-gpu \
           --no-sandbox \
           --disable-dev-shm-usage \
-          --dump-dom "${@}" 2>/dev/null
+          "${@}" 2>/dev/null
           EOF
   
-          sudo chmod +x /usr/local/bin/webBroswerHeadless
+          sudo chmod +x /usr/local/bin/webBrowserHeadless
               
       - name: Setup default browser
         run: |
-          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBroswerHeadless 100
-          sudo update-alternatives --set www-browser /usr/local/bin/webBroswerHeadless
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBrowserHeadless 100
+          sudo update-alternatives --set www-browser /usr/local/bin/webBrowserHeadless
           ls -l /etc/alternatives | grep browser
+      - name: Test opening some URL
+        run: |
+          if xdg-open https://example.com; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed"
+            exit 1
+          fi
 
       - uses: actions/checkout@v3
         with:
