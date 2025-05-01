@@ -42,7 +42,7 @@ jobs:
         run: |
           ls -l /usr/local/bin/webBrowserHeadless
           cat /usr/local/bin/webBrowserHeadless
-          if grep -q "<title>Example Domain</title>" `webBrowserHeadless https://example.com` ; then
+          if webBrowserHeadless https://example.com | grep -q "<title>Example Domain</title>" ; then
             echo "✅ webBrowserHeadless executed successfully"
           else
             echo "❌ webBrowserHeadless failed"
@@ -57,7 +57,7 @@ jobs:
 
       - name: Test opening some URL with default browser (xdg-open)
         run: |
-          if grep -q "<title>Example Domain</title>" `xdg-open https://example.com` ; then
+          if xdg-open https://example.com | grep -q "<title>Example Domain</title>" ; then
             echo "✅ xdg-open executed successfully"
           else
             echo "❌ xdg-open failed"
