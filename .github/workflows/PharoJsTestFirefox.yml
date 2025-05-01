@@ -35,13 +35,15 @@ jobs:
           sudo update-alternatives --set www-browser /usr/local/bin/webBrowserHeadless
           ls -l /etc/alternatives | grep browser
       - name: Test opening some URL with webBrowserHeadless
-        run: |
-          if webBrowserHeadless https://example.com ; then
-            echo "✅ webBrowserHeadless executed successfully"
-          else
-            echo "❌ webBrowserHeadless failed"
-            exit 1
-          fi  
+        uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
+        with:
+          run: |
+            if webBrowserHeadless https://example.com ; then
+              echo "✅ webBrowserHeadless executed successfully"
+            else
+              echo "❌ webBrowserHeadless failed"
+              exit 1
+            fi  
       # From https://github.com/actions/setup-node
       - uses: actions/setup-node@v4
         # with:
