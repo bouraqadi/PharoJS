@@ -65,9 +65,13 @@ jobs:
           fetch-depth: 0 # Option fetching all commits
 
       - name: run tests
-        run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-        shell: bash
-        timeout-minutes: 15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          action: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
+          with: |
+            run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+          attempt_limit: 3
+          shell: bash
+        timeout-minutes: 15
 
