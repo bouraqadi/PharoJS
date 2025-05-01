@@ -25,7 +25,7 @@ jobs:
           --disable-gpu \
           --no-sandbox \
           --disable-dev-shm-usage \
-          "${@}" 2>/dev/null &
+          "${@}" & # 2>/dev/null &
           sleep 1
           echo "Chrome launched headless with parameters ${@}"
           EOF
