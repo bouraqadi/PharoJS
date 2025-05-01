@@ -63,17 +63,16 @@ jobs:
           smalltalk-image: 'Pharo64-12'
 
       - name: run tests
-        run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-        shell: bash
-        timeout-minutes: 15
+      #   run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+      #   shell: bash
+      #   timeout-minutes: 15
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-        # uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # with:
-        #   run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-        #   shell: bash
-        #   timeout-minutes: 15
+        with:
+          run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+          shell: bash
+          timeout-minutes: 15
 
