@@ -1,0 +1,61 @@
+# This is a basic workflow to help you get started with Actions
+  
+name: Default Browser Headless Chrome Standard Install
+
+# Controls when the workflow will run
+on:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+          
+      - name: Create headless browser script
+        run: |
+          sudo tee /usr/local/bin/webBrowserHeadless > /dev/null << 'EOF'
+          #!/bin/sh
+          google-chrome --headless=new \
+          --disable-gpu \
+          --no-sandbox \
+          --disable-dev-shm-usage \
+          --dump-dom "${@}" 2>/dev/null
+          EOF
+  
+          sudo chmod +x /usr/local/bin/webBrowserHeadless
+          
+      - name: Verify script creation
+        run: |
+          ls -l /usr/local/bin/webBrowserHeadless
+          cat /usr/local/bin/webBrowserHeadless
+          /usr/local/bin/webBrowserHeadless https://example.com
+          
+      - name: Setup default browser
+        run: |
+          sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBrowserHeadless 100
+          sudo update-alternatives --set www-browser /usr/local/bin/webBrowserHeadless
+          ls -l /etc/alternatives | grep browser
+
+      - name: Test opening some URL with webBrowserHeadless
+        run: |
+          if webBrowserHeadless https://example.com; then
+            echo "✅ webBrowserHeadless executed successfully"
+          else
+            echo "❌ webBrowserHeadless failed"
+            exit 1
+          fi
+      - name: Test opening some URL
+        run: |
+          if xdg-open https://example.com; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed"
+            exit 1
+          fi
+    
