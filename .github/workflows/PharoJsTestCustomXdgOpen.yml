@@ -31,7 +31,8 @@ jobs:
           echo "Chrome launched headless with parameters ${@}"
           EOF
   
-          sudo chmod +x /usr/local/bin/xdg-open
+          # sudo chmod +x /usr/local/bin/xdg-open
+          sudo chmod +x  /usr/bin/xdg-open
           
       - name: Test opening some URL with customized xdg-open
         run: |
