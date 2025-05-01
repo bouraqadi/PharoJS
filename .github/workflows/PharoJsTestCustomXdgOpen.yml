@@ -18,7 +18,8 @@ jobs:
           
       - name: Create headless custom xdg-open
         run: |
-          sudo tee /usr/local/bin/xdg-open > /dev/null << 'EOF'
+          # sudo tee /usr/local/bin/xdg-open > /dev/null << 'EOF'
+          sudo tee /usr/bin/xdg-open > /dev/null << 'EOF'
           #!/bin/sh
           # --dump-dom makes Chrome outputs HTML from built DOM, then quits
           google-chrome --headless=new \
