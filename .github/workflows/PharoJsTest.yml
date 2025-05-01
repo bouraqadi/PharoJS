@@ -37,7 +37,14 @@ jobs:
           sudo update-alternatives --install /usr/bin/www-browser www-browser /usr/local/bin/webBrowserHeadless 100
           sudo update-alternatives --set www-browser /usr/local/bin/webBrowserHeadless
           ls -l /etc/alternatives | grep browser
-        
+      - name: Test opening some URL with default browser (xdg-open)
+        run: |
+          if xdg-open --dump-dom https://example.com | grep -q "<title>Example Domain</title>" ; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed"
+            exit 1
+          fi  
       # From https://github.com/actions/setup-node
       - uses: actions/setup-node@v4
         # with:
