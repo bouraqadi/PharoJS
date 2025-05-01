@@ -1,0 +1,78 @@
+name: PharoJsChromeContainer
+
+# Controls when the workflow will run
+on:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # Use a container image that has Chrome pre-installed with compatible libraries
+    container:
+      image: selenium/standalone-chrome:latest
+      options: --shm-size=2g
+
+    runs-on: ubuntu-latest
+    steps:          
+      - name: Create headless custom xdg-open
+        run: |
+          sudo tee /usr/local/bin/xdg-open > /dev/null << 'EOF'
+          #!/bin/sh
+          # --dump-dom makes Chrome outputs HTML from built DOM, then quits
+          google-chrome --headless=new \
+          --disable-gpu \
+          --no-sandbox \
+          --disable-dev-shm-usage \
+          "${@}" # 2>/dev/null &
+          sleep 1
+          echo "Chrome launched headless with parameters ${@}"
+          EOF
+  
+          sudo chmod +x /usr/local/bin/xdg-open
+          
+      - name: Test opening some URL with customized xdg-open
+        run: |
+          if xdg-open --dump-dom https://example.com | grep -q "<title>Example Domain</title>" ; then
+            echo "✅ xdg-open executed successfully"
+          else
+            echo "❌ xdg-open failed"
+            exit 1
+          fi
+          
+      # From https://github.com/actions/setup-node
+      - uses: actions/setup-node@v4
+        # with:
+        #   node-version: 20
+          # cache: 'npm'
+          # cache-dependency-path: '**/package-lock.json'
+
+      # From https://github.com/actions/checkout
+      - uses: actions/checkout@v4
+        with: 
+          # Recommended by SmalltalkCi action
+          # Iceberg requires full history
+          fetch-depth: 0 # Option fetching all commits
+
+      # From https://github.com/marketplace/actions/setup-smalltalkci
+      - uses: hpi-swa/setup-smalltalkCI@v1
+        id: smalltalkci
+        with:
+          smalltalk-image: 'Pharo64-12'
+
+      - name: run tests
+        run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        shell: bash
+        timeout-minutes: 15
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        # uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # with:
+        #   run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        #   shell: bash
+        #   timeout-minutes: 15
