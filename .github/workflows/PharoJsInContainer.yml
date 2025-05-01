@@ -1,4 +1,4 @@
-name: PharoJsChromeContainer
+name: PharoJsInContainer
 
 # Controls when the workflow will run
 on:
@@ -8,35 +8,17 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
+  # This workflow contains a single job called "pharo-js-test"
+  pharo-js-test:
     # Use a container image that has Chrome pre-installed with compatible libraries
     container:
       image: selenium/standalone-chrome:latest
       options: --shm-size=2g
-
     runs-on: ubuntu-latest
-    steps:          
-      - name: Create headless custom xdg-open
-        run: |
-          sudo tee /usr/local/bin/xdg-open > /dev/null << 'EOF'
-          #!/bin/sh
-          # --dump-dom makes Chrome outputs HTML from built DOM, then quits
-          sudo google-chrome --headless=new \
-          --disable-gpu \
-          --no-sandbox \
-          --disable-dev-shm-usage \
-          --user-data-dir=/tmp/chrome-data \
-          "${@}" # 2>/dev/null &
-          sleep 1
-          echo "Chrome launched headless with parameters ${@}"
-          EOF
-  
-          sudo chmod +x /usr/local/bin/xdg-open
-          
+    steps:                    
       - name: Test opening some URL with customized xdg-open
         run: |
-          if xdg-open --dump-dom https://example.com | grep -q "<title>Example Domain</title>" ; then
+          if xdg-open https://example.com | grep -q "<title>Example Domain</title>" ; then
             echo "✅ xdg-open executed successfully"
           else
             echo "❌ xdg-open failed"
