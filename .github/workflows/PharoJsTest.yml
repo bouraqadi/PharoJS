@@ -52,11 +52,6 @@ jobs:
           # cache: 'npm'
           # cache-dependency-path: '**/package-lock.json'
 
-      # From https://github.com/marketplace/actions/setup-smalltalkci
-      - uses: hpi-swa/setup-smalltalkCI@v1
-        id: smalltalkci
-        with:
-          smalltalk-image: 'Pharo64-12'
       # From https://github.com/actions/checkout
       - uses: actions/checkout@v4
         with: 
@@ -64,14 +59,18 @@ jobs:
           # Iceberg requires full history
           fetch-depth: 0 # Option fetching all commits
 
+      # From https://github.com/marketplace/actions/setup-smalltalkci
+      - uses: hpi-swa/setup-smalltalkCI@v1
+        id: smalltalkci
+        with:
+          smalltalk-image: 'Pharo64-12'
+
       - name: run tests
+        uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          action: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
-          with: |
-            run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-          attempt_limit: 3
+          run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
           shell: bash
-        timeout-minutes: 15
+          timeout-minutes: 15
 
