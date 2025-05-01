@@ -11,13 +11,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     runs-on: ubuntu-latest
-    steps:
-
-      - name: Upgrade harfbuzz
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libharfbuzz0b
-      
+    steps:     
       # From https://github.com/browser-actions
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v1
