@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
   
-name: Headless Script Default Browser
+name: defaultBrowser2025-04-23
 
 # Controls when the workflow will run
 on:
