@@ -19,6 +19,9 @@ jobs:
     steps:          
       - name: Create headless custom xdg-open
         run: |
+          sudo apt-get update
+          sudo apt-get install -y xdg-utils
+          
           sudo tee /usr/local/bin/xdg-open > /dev/null << 'EOF'
           #!/bin/sh
           # --dump-dom makes Chrome outputs HTML from built DOM, then quits
