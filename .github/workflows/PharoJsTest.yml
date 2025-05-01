@@ -39,11 +39,11 @@ jobs:
           ls -l /etc/alternatives | grep browser
         
       # From https://github.com/actions/setup-node
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+      - uses: actions/setup-node@v4
+        # with:
+        #   node-version: 20
+          # cache: 'npm'
+          # cache-dependency-path: '**/package-lock.json'
 
       # From https://github.com/marketplace/actions/setup-smalltalkci
       - uses: hpi-swa/setup-smalltalkCI@v1
