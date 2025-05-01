@@ -19,8 +19,8 @@ jobs:
     steps:          
       - name: Create headless custom xdg-open
         run: |
-          sudo apt-get update
-          sudo apt-get install -y xdg-utils
+          # Create a temp directory for chrome user data
+          mkdir -p /tmp/chrome-data
           
           sudo tee /usr/local/bin/xdg-open > /dev/null << 'EOF'
           #!/bin/sh
@@ -29,6 +29,7 @@ jobs:
           --disable-gpu \
           --no-sandbox \
           --disable-dev-shm-usage \
+          --user-data-dir=/tmp/chrome-data \
           "${@}" # 2>/dev/null &
           sleep 1
           echo "Chrome launched headless with parameters ${@}"
