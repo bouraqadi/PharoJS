@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # From https://github.com/browser-actions
-      # - name: Setup Chrome
-      #   uses: browser-actions/setup-chrome@v1
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
           
       - name: Create headless browser script
         run: |
