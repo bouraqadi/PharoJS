@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      # Install a specific version of libpango that work together
+      # Install a specific version of libpango and harfbuzz that work together
       - name: Install libraries for Chrome
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpango1.0-0
+          sudo apt-get install -y libharfbuzz-dev libpango1.0-dev
 
       # From https://github.com/browser-actions
       - name: Setup Chrome
