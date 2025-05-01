@@ -39,7 +39,7 @@ jobs:
           ls -l /etc/alternatives | grep browser
       - name: Test opening some URL with default browser (xdg-open)
         run: |
-          if xdg-open "--dump-dom https://example.com" | grep -q "<title>Example Domain</title>" ; then
+          if xdg-open "https://example.com --dump-dom" | grep -q "<title>Example Domain</title>" ; then
             echo "✅ xdg-open executed successfully"
           else
             echo "❌ xdg-open failed"
