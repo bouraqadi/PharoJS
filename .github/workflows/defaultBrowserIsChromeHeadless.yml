@@ -33,7 +33,7 @@ jobs:
           --disable-gpu \
           --no-sandbox \
           --disable-dev-shm-usage \
-          --dump-dom "${@}" #2>/dev/null
+          --dump-dom "${@}" 2>/dev/null
           EOF
   
           sudo chmod +x /usr/local/bin/webBrowserHeadless
