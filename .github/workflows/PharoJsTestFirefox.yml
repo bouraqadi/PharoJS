@@ -14,6 +14,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Start virtual framebuffer XVFB
+        env:
+          DISPLAY: ":99"
+        run: |
+          sudo apt-get install -y xvfb
+          Xvfb :99 -screen 0 1920x1080x24 &
+
       # From https://github.com/browser-actions
       - name: Setup Firefox
         uses: browser-actions/setup-firefox@v1
@@ -65,16 +72,16 @@ jobs:
           smalltalk-image: 'Pharo64-12'
 
       - name: run tests
-      #   run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-      #   shell: bash
-      #   timeout-minutes: 15
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
+        run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        shell: bash
+        timeout-minutes: 15
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
-          shell: bash
-          timeout-minutes: 15
+        # uses: coactions/setup-xvfb@v1.0.1 # From https://github.com/marketplace/actions/setup-xvfb
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # with:
+        #   run: smalltalkci -s ${{ steps.smalltalkci.outputs.smalltalk-image }}
+        #   shell: bash
+        #   timeout-minutes: 15
 
