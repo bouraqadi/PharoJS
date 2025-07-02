@@ -32,7 +32,7 @@ jobs:
           console.log('Got URL ${url}');
           EOF
   
-          sudo chmod +x webBrowserHeadless
+          sudo chmod +x ${GITHUB_WORKSPACE}/webBrowserHeadless
           ln -s ${GITHUB_WORKSPACE}/webBrowserHeadless /usr/local/bin/webBrowserHeadless
           
       - name: Verify webBrowserHeadless script works as expected
