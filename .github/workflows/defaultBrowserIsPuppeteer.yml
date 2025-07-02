@@ -14,15 +14,15 @@ jobs:
     steps:
       - name: Create headless browser script
         run: |
-          sudo tee ${GITHUB_WORKSPACE}/webBrowserHeadless > /dev/null << 'EOF'
+          sudo tee webBrowserHeadless > /dev/null << 'EOF'
           #!/usr/bin/env node
           console.log("Starting webBrowserHeadless");
           const url = process.argv[2];
           console.log('Got URL ${url}');
           EOF
   
-          sudo chmod +x ${GITHUB_WORKSPACE}/webBrowserHeadless
-          ln -s ${GITHUB_WORKSPACE}/webBrowserHeadless /usr/local/bin/webBrowserHeadless
+          sudo chmod +x webBrowserHeadless
+          ln -s webBrowserHeadless /usr/local/bin/webBrowserHeadless
           
       - name: Verify webBrowserHeadless script works as expected
         run: |
