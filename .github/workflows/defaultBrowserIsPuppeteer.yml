@@ -30,21 +30,23 @@ jobs:
         run: |
           sudo tee ${GITHUB_WORKSPACE}/webBrowserHeadless > /dev/null << 'EOF'
           #!/usr/bin/env node
+          console.log("Starting webBrowserHeadless");
+          const url = process.argv[2];
+          console.log('Got URL ${url}');
+
           const puppeteer = require('puppeteer');
 
           (async () => {
-            const url = process.argv[2];
             if (!url) {
               console.error('Usage: ./openUrl <URL>');
               console.error('Example: ./openUrl https://www.google.com');
               process.exit(1); 
             }
-            console.log('Got URL ${url}');
             let browser; 
             try {
               // Launch a new browser instance.
               // Set headless: false if you want to see the browser UI.
-              browser = await puppeteer.launch({args: ['--no-sandbox']}); // {args: ['--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'] }
+              browser = await puppeteer.launch(headless: false, {args: ['--no-sandbox']}); // {args: ['--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'] }
               console.log('Browser launched successfully!');
 
               // Create a new page (tab)
