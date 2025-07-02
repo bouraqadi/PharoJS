@@ -1,4 +1,4 @@
-name: Create and Run JS Script
+name: Create and Run Puppeteer Script
 
 on:
   workflow_dispatch:
@@ -11,25 +11,63 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     
-    - name: Create JavaScript script
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install Puppeteer
+      run: npm install puppeteer
+    
+    - name: Create Puppeteer script
       run: |
-        cat > display_arg.js << 'EOF'
+        cat > browser_opener.js << 'EOF'
         #!/usr/bin/env node
         
-        const arg = process.argv[2];
+        const puppeteer = require('puppeteer');
         
-        if (!arg) {
-          console.log('No argument provided');
+        const url = process.argv[2];
+        
+        if (!url) {
+          console.log('No URL provided');
+          console.log('Usage: node browser_opener.js <url>');
+          console.log('Example: node browser_opener.js https://github.com');
           process.exit(1);
         }
         
-        console.log(`First argument: ${arg}`);
+        (async () => {
+          try {
+            console.log(`Opening browser and navigating to: ${url}`);
+            
+            const browser = await puppeteer.launch({
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            
+            const page = await browser.newPage();
+            await page.goto(url, { waitUntil: 'networkidle2' });
+            
+            const title = await page.title();
+            const currentUrl = page.url();
+            
+            console.log(`Successfully loaded page:`);
+            console.log(`  Title: ${title}`);
+            console.log(`  URL: ${currentUrl}`);
+            
+            await browser.close();
+            console.log('Browser closed successfully');
+            
+          } catch (error) {
+            console.error('Error:', error.message);
+            process.exit(1);
+          }
+        })();
         EOF
         
-        chmod +x display_arg.js
+        chmod +x browser_opener.js
     
     - name: Run script - First execution
-      run: node display_arg.js "Hello from first run"
+      run: node browser_opener.js "https://github.com"
     
     - name: Run script - Second execution
-      run: node display_arg.js "Hello from second run"
+      run: node browser_opener.js "https://www.google.com"
