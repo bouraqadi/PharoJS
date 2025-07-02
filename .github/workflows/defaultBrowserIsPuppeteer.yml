@@ -69,7 +69,7 @@ jobs:
           EOF
   
           sudo chmod +x ${GITHUB_WORKSPACE}/webBrowserHeadless
-          ln -s /usr/local/bin/webBrowserHeadless ${GITHUB_WORKSPACE}/webBrowserHeadless
+          ln -s ${GITHUB_WORKSPACE}/webBrowserHeadless /usr/local/bin/webBrowserHeadless
           
       - name: Verify webBrowserHeadless script works as expected
         run: |
