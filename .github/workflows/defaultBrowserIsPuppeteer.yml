@@ -44,7 +44,7 @@ jobs:
             try {
               // Launch a new browser instance.
               // Set headless: false if you want to see the browser UI.
-              browser = await puppeteer.launch(); // {args: ['--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'] }
+              browser = await puppeteer.launch({args: ['--no-sandbox'}); // {args: ['--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'] }
               console.log('Browser launched successfully!');
 
               // Create a new page (tab)
