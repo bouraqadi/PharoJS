@@ -39,18 +39,19 @@ jobs:
               console.error('Example: ./openUrl https://www.google.com');
               process.exit(1); 
             }
+            console.log('Got URL ${url}');
             let browser; 
             try {
               // Launch a new browser instance.
               // Set headless: false if you want to see the browser UI.
-              browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+              browser = await puppeteer.launch({args: ['--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'] });
               console.log('Browser launched successfully!');
 
               // Create a new page (tab)
               const page = await browser.newPage();
               console.log('New page created.');
 
-              console.log(`Navigating to: ${url}`);
+              console.log(`Ready to open the web browser on ${url}`);
               // Navigate to the provided URL
               await page.goto(url, { waitUntil: 'networkidle0' });
               console.log('Page loaded successfully!');
