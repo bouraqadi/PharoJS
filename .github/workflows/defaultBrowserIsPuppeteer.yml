@@ -12,6 +12,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
       - name: Create headless browser script
         run: |
           sudo tee ${GITHUB_WORKSPACE}/webBrowserHeadless > /dev/null << 'EOF'
