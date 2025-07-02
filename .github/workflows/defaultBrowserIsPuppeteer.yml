@@ -65,7 +65,7 @@ jobs:
         EOF
         
         chmod +x webBrowserHeadless
-        echo "$HOME" >> $GITHUB_PATH
+        echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
     
     - name: Run script - First execution
       run: webBrowserHeadless "https://github.com"
