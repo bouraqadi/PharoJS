@@ -64,6 +64,11 @@ jobs:
                   await browser.close();
                   console.log('Browser closed.');
                 }
+            }finally{
+              if (browser) {
+                  await browser.close();
+                  console.log('Browser closed.');
+                }            
             }
           })();
           EOF
