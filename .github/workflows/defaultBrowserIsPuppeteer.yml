@@ -1,6 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-  
-name: Default Browser is Chrome Headless 
+name: Default Browser with Puppeteer 
 
 # Controls when the workflow will run
 on:
@@ -16,6 +14,7 @@ jobs:
     steps:
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
+      
         # Manual install
         # run: |
         #   wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -23,7 +22,10 @@ jobs:
         #   sudo apt-get update
         #   sudo apt-get install -y google-chrome-stable curl
 
-          
+      - name: Install Puppeteer
+        run: |
+          npm install puppeteer
+
       - name: Create headless browser script
         run: |
           sudo tee /usr/local/bin/webBrowserHeadless > /dev/null << 'EOF'
