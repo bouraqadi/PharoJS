@@ -33,47 +33,6 @@ jobs:
           console.log("Starting webBrowserHeadless");
           const url = process.argv[2];
           console.log('Got URL ${url}');
-
-          const puppeteer = require('puppeteer');
-
-          (async () => {
-            if (!url) {
-              console.error('Usage: ./openUrl <URL>');
-              console.error('Example: ./openUrl https://www.google.com');
-              process.exit(1); 
-            }
-            let browser; 
-            try {
-              // Launch a new browser instance.
-              // Set headless: false if you want to see the browser UI.
-              browser = await puppeteer.launch(headless: false, {args: ['--no-sandbox']}); // {args: ['--headless=new', '--disable-gpu', '--no-sandbox', '--disable-dev-shm-usage'] }
-              console.log('Browser launched successfully!');
-
-              // Create a new page (tab)
-              const page = await browser.newPage();
-              console.log('New page created.');
-
-              console.log(`Ready to open the web browser on ${url}`);
-              // Navigate to the provided URL
-              await page.goto(url, { waitUntil: 'networkidle0' });
-              console.log('Page loaded successfully!');
-
-              // Get and print the page title
-              const pageTitle = await page.title();
-              console.log(`Opened title: "${pageTitle}"`);
-                } catch (error) {
-              console.error('An error occurred:', error);
-              if (browser) {
-                  await browser.close();
-                  console.log('Browser closed.');
-                }
-            }finally{
-              if (browser) {
-                  await browser.close();
-                  console.log('Browser closed.');
-                }            
-            }
-          })();
           EOF
   
           sudo chmod +x ${GITHUB_WORKSPACE}/webBrowserHeadless
@@ -82,7 +41,6 @@ jobs:
       - name: Verify webBrowserHeadless script works as expected
         run: |
           ls -l /usr/local/bin/webBrowserHeadless
-          cat /usr/local/bin/webBrowserHeadless
           if webBrowserHeadless https://example.com | grep -q "<title>Example Domain</title>" ; then
             echo "✅ webBrowserHeadless executed successfully"
           else
