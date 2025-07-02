@@ -24,6 +24,7 @@ jobs:
 
       - name: Install Puppeteer
         run: |
+          npm init -y
           npm install puppeteer
 
       - name: Create headless browser script
