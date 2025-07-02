@@ -21,7 +21,7 @@ jobs:
     
     - name: Create Puppeteer script
       run: |
-        cat > browser_opener.js << 'EOF'
+        cat > webBrowserHeadless << 'EOF'
         #!/usr/bin/env node
         
         const puppeteer = require('puppeteer');
@@ -64,10 +64,12 @@ jobs:
         })();
         EOF
         
-        chmod +x browser_opener.js
+        chmod +x webBrowserHeadless
+        ln -s webBrowserHeadless /usr/local/bin/webBrowserHeadless
+
     
     - name: Run script - First execution
-      run: node browser_opener.js "https://github.com"
+      run: webBrowserHeadless "https://github.com"
     
     - name: Run script - Second execution
-      run: node browser_opener.js "https://www.google.com"
+      run: webBrowserHeadless "https://www.google.com"
