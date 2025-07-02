@@ -65,8 +65,8 @@ jobs:
         EOF
         
         chmod +x webBrowserHeadless
-        ln -s webBrowserHeadless /usr/local/bin/webBrowserHeadless
-
+        mv webBrowserHeadless ~/.local/bin/
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
     
     - name: Run script - First execution
       run: webBrowserHeadless "https://github.com"
