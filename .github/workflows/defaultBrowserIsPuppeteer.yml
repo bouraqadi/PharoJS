@@ -43,7 +43,7 @@ jobs:
             try {
               // Launch a new browser instance.
               // Set headless: false if you want to see the browser UI.
-              browser = await puppeteer.launch({ headless: false }); // Changed to false to keep it visible
+              browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
               console.log('Browser launched successfully!');
 
               // Create a new page (tab)
