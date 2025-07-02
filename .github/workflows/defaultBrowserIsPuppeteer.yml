@@ -24,11 +24,11 @@ jobs:
 
       - name: Install Puppeteer
         run: |
-          npm install -g puppeteer
+          npm install puppeteer
 
       - name: Create headless browser script
         run: |
-          sudo tee /usr/local/bin/webBrowserHeadless > /dev/null << 'EOF'
+          sudo tee ${GITHUB_WORKSPACE}/webBrowserHeadless > /dev/null << 'EOF'
           #!/usr/bin/env node
           const puppeteer = require('puppeteer');
 
@@ -68,7 +68,8 @@ jobs:
           })();
           EOF
   
-          sudo chmod +x /usr/local/bin/webBrowserHeadless
+          sudo chmod +x ${GITHUB_WORKSPACE}/webBrowserHeadless
+          ln -s /usr/local/bin/webBrowserHeadless ${GITHUB_WORKSPACE}/webBrowserHeadless
           
       - name: Verify webBrowserHeadless script works as expected
         run: |
