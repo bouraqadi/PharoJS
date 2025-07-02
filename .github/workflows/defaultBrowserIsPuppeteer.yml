@@ -64,7 +64,7 @@ jobs:
         })();
         EOF
         
-        chmod +x sudo chmod +x  /usr/bin/xdg-open
+        sudo chmod +x  /usr/bin/xdg-open
     
     - name: Run script - First execution
       run: xdg-open "https://example.com"
