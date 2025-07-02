@@ -21,7 +21,7 @@ jobs:
     
     - name: Create Puppeteer script
       run: |
-        cat > webBrowserHeadless << 'EOF'
+        cat > /usr/local/bin/xdg-open << 'EOF'
         #!/usr/bin/env node
         
         const puppeteer = require('puppeteer');
@@ -64,11 +64,10 @@ jobs:
         })();
         EOF
         
-        chmod +x webBrowserHeadless
-        echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
+        chmod +x sudo chmod +x  /usr/bin/xdg-open
     
     - name: Run script - First execution
-      run: webBrowserHeadless "https://github.com"
+      run: xdg-open "https://example.com"
     
     - name: Run script - Second execution
-      run: webBrowserHeadless "https://www.google.com"
+      run: xdg-open "https://nootrix.com"
