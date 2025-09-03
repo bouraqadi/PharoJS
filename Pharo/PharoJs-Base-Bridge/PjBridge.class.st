@@ -73,6 +73,22 @@ PjBridge class >> bridgeForAppClass: appClass client: bridgeClient [
 		  yourself
 ]
 
+{ #category : 'bridge handling' }
+PjBridge class >> cleanUpProcesses [
+
+	Smalltalk garbageCollect.
+	Process allInstances
+		select: [ :each | each priority = 30 ]
+		thenDo: #terminate.
+
+	Smalltalk garbageCollect.
+	Process allInstances
+		select: [ :each |
+			each name beginsWith: 'ZnMultiThreadedServer HTTP' ]
+		thenDo: #terminate.
+	Smalltalk garbageCollect
+]
+
 { #category : 'accessing' }
 PjBridge class >> debugClass [
 
@@ -125,12 +141,19 @@ PjBridge class >> startOn: portNumber title: title [
 
 { #category : 'bridge handling' }
 PjBridge class >> stop [
+
 	<script>
-	
-	self soleBridge ifNotNil: [ 
-		self soleBridge stop.
-		self soleBridge: nil.
-		Smalltalk garbageCollect ]
+	self soleBridge ifNil: [ ^ self ].
+	self soleBridge stop.
+	self soleBridge: nil
+]
+
+{ #category : 'bridge handling' }
+PjBridge class >> stopAndCleanUp [
+
+	<script>
+	self stop.
+	self cleanUpProcesses
 ]
 
 { #category : 'actions' }
@@ -425,6 +448,11 @@ PjBridge >> loadClass: aClass [
 	^ aClass
 ]
 
+{ #category : 'accessing' }
+PjBridge >> maxMillisecondsToWaitForResponse [
+	^2000
+]
+
 { #category : 'actions' }
 PjBridge >> minimumStepDuration [
 
@@ -541,10 +569,13 @@ PjBridge >> sendMessageAndWaitForResponse: msg [
 
 	| responseMsg resultForSentMessage |
 	self sendMessage: msg.
-	monitor critical: [ 
-		monitor waitUntil: [ 
-			responseMsg := self incomingResponseMessageForSentMessage: msg.
-			responseMsg notNil ] ].
+	monitor critical: [
+		monitor
+			waitUntil: [
+				responseMsg := self incomingResponseMessageForSentMessage: msg.
+				responseMsg notNil ]
+			for: nil
+			maxMilliseconds: self maxMillisecondsToWaitForResponse ].
 	resultForSentMessage := self valueFromResponseMessage: responseMsg.
 	self executeCallbacksUntilDepletion.
 	^ resultForSentMessage

@@ -59,17 +59,20 @@ PjBrowserBridgeClient >> defaultAppClass [
 ]
 
 { #category : 'accessing' }
-PjBrowserBridgeClient >> exporterClass [
-	^ PjExporter
-]
-
-{ #category : 'accessing' }
 PjBrowserBridgeClient >> initializeWithBridge: aBridge [
 	super initializeWithBridge: aBridge.
 	self codeGenerator resetHtmlGenerator.
 	self server css: self codeGenerator css.
 	self server favicon: self codeGenerator favicon.
 	self server html: self codeGenerator html.
+]
+
+{ #category : 'initialization' }
+PjBrowserBridgeClient >> reset [
+
+	self resetProxiesImmediately.
+	[ self sendMessage: PjMessageReload new ] fork.
+	super reset
 ]
 
 { #category : 'accessing' }
